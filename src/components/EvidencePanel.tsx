@@ -230,26 +230,23 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
                 {record.facilityDetails.timelineSteps.map((step, i) => (
                   <div
                     key={i}
-                    className={`px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs ${
-                      step.status === 'current' ? 'bg-[#EDF7F2]' : 'bg-white'
-                    }`}
+                    className={`px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs ${step.status === 'current' ? 'bg-[#EDF7F2]' : 'bg-white'
+                      }`}
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <Calendar
-                        className={`w-3.5 h-3.5 shrink-0 ${
-                          step.status === 'current'
+                        className={`w-3.5 h-3.5 shrink-0 ${step.status === 'current'
                             ? 'text-[#00915A]'
                             : step.status === 'warning'
-                            ? 'text-amber-600'
-                            : 'text-gray-400'
-                        }`}
+                              ? 'text-amber-600'
+                              : 'text-gray-400'
+                          }`}
                       />
                       <span
-                        className={`truncate ${
-                          step.status === 'current'
+                        className={`truncate ${step.status === 'current'
                             ? 'font-semibold text-[#007348]'
                             : 'text-gray-800'
-                        }`}
+                          }`}
                       >
                         {step.label}
                       </span>
@@ -350,9 +347,8 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
                     {m.value}
                   </div>
                   <div
-                    className={`text-[11px] font-mono tabular-nums mt-0.5 ${
-                      m.positive ? 'text-[#007348]' : 'text-amber-700'
-                    }`}
+                    className={`text-[11px] font-mono tabular-nums mt-0.5 ${m.positive ? 'text-[#007348]' : 'text-amber-700'
+                      }`}
                   >
                     {m.change}
                   </div>
@@ -385,11 +381,10 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
                   type="button"
                   onClick={() => onSelectEvidence(id)}
                   aria-pressed={id === record.id}
-                  className={`max-w-full px-2.5 py-1.5 text-[11px] leading-snug rounded border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348] focus-visible:ring-offset-2 ${
-                    id === record.id
+                  className={`max-w-full px-2.5 py-1.5 text-[11px] leading-snug rounded border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348] focus-visible:ring-offset-2 ${id === record.id
                       ? 'bg-[#00915A] text-white border-[#00915A]'
                       : 'bg-white text-gray-700 border-gray-200 hover:border-[#00915A] hover:bg-[#F8FAF9]'
-                  }`}
+                    }`}
                 >
                   {item.sourceLabel}
                 </button>

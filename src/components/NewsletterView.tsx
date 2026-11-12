@@ -97,11 +97,10 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
             type="button"
             onClick={() => seg.evidenceId && onOpenEvidence(seg.evidenceId)}
             title={`Inspect source: ${seg.sourceBadge || 'Evidence Record'}`}
-            className={`inline text-left font-medium underline underline-offset-3 decoration-[1.5px] transition-colors cursor-pointer rounded px-0.5 -mx-0.5 ${
-              isSelected
+            className={`inline text-left font-medium underline underline-offset-3 decoration-[1.5px] transition-colors cursor-pointer rounded px-0.5 -mx-0.5 ${isSelected
                 ? 'bg-[#00915A]/15 text-[#007348] decoration-[#007348]'
                 : 'text-[#007348] decoration-[#00915A]/45 hover:bg-[#EDF7F2] hover:decoration-[#00915A]'
-            }`}
+              }`}
           >
             <span>{seg.content}</span>
             <span className="inline-flex items-center gap-0.5 text-[11px] font-mono text-[#00915A] no-underline align-baseline ml-1">
@@ -279,7 +278,7 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
               </p>
             </div>
 
-            {/* Public Evidence vs. Synthetic CRM Context */}
+            {/* Public Evidence vs. Demo CRM Context */}
             <div className="space-y-3.5 text-[13.5px] leading-relaxed text-gray-700">
               <div>
                 <div className="text-xs font-semibold text-gray-900 mb-1">
@@ -290,7 +289,7 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
 
               <div className="bg-[#F9FAFB] border border-gray-200 rounded px-4 py-3">
                 <div className="text-xs font-semibold text-gray-900 mb-1">
-                  Synthetic CRM Context (Internal CRM Note)
+                  Demo CRM Context (Internal CRM Note)
                 </div>
                 <p>{renderSegments(client.syntheticCrmContext)}</p>
               </div>
@@ -360,13 +359,11 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
                       <button
                         type="button"
                         onClick={() => onOpenEvidence(evId)}
-                        className={`inline-flex items-center gap-1 px-2 py-1 text-xs transition-colors cursor-pointer whitespace-nowrap border ${
-                          rec.externalUrl ? 'rounded-l border-r-0' : 'rounded'
-                        } ${
-                          isActive
+                        className={`inline-flex items-center gap-1 px-2 py-1 text-xs transition-colors cursor-pointer whitespace-nowrap border ${rec.externalUrl ? 'rounded-l border-r-0' : 'rounded'
+                          } ${isActive
                             ? 'bg-[#00915A] text-white border-[#00915A]'
                             : 'bg-white text-gray-700 border-gray-200 hover:border-[#00915A] hover:text-[#007348]'
-                        }`}
+                          }`}
                       >
                         <span>{rec.sourceLabel}</span>
                       </button>
@@ -508,11 +505,10 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
                   <button
                     type="button"
                     onClick={() => toggleReminder(item.id)}
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded border transition-colors cursor-pointer ${
-                      isSet
+                    className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded border transition-colors cursor-pointer ${isSet
                         ? 'bg-[#EDF7F2] text-[#007348] border-[#00915A]/40'
                         : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                    }`}
+                      }`}
                   >
                     {isSet ? (
                       <>
@@ -547,22 +543,20 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
             <button
               type="button"
               onClick={() => setAuditTab('suppressed')}
-              className={`px-3 py-1 rounded transition-colors cursor-pointer ${
-                auditTab === 'suppressed'
+              className={`px-3 py-1 rounded transition-colors cursor-pointer ${auditTab === 'suppressed'
                   ? 'bg-white text-gray-900 font-medium shadow-2xs'
                   : 'text-gray-600 hover:text-gray-900'
-              }`}
+                }`}
             >
               Suppressed This Week (8)
             </button>
             <button
               type="button"
               onClick={() => setAuditTab('feed')}
-              className={`px-3 py-1 rounded transition-colors cursor-pointer ${
-                auditTab === 'feed'
+              className={`px-3 py-1 rounded transition-colors cursor-pointer ${auditTab === 'feed'
                   ? 'bg-white text-gray-900 font-medium shadow-2xs'
                   : 'text-gray-600 hover:text-gray-900'
-              }`}
+                }`}
             >
               Ingested Trigger Feed (11)
             </button>
