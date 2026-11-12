@@ -67,27 +67,38 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
   })();
 
   const TypeIcon = typeMeta.icon;
+  const isCrmEvidence = record.type === 'crm-facility' || record.type === 'meeting-note';
+  const headerTone = isCrmEvidence
+    ? 'bg-[#123B30] border-[#0B3027] text-white'
+    : 'bg-[#F8FAF9] border-gray-200 text-gray-900';
+  const headerMutedTone = isCrmEvidence ? 'text-white/65' : 'text-gray-500';
+  const headerControlTone = isCrmEvidence
+    ? 'text-white/75 hover:text-white hover:bg-white/10 focus-visible:ring-white focus-visible:ring-offset-[#123B30]'
+    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/70 focus-visible:ring-[#007348] focus-visible:ring-offset-white';
 
   return (
-    <div className="bg-white flex flex-col h-full border border-gray-200/90 rounded-lg shadow-2xs overflow-hidden">
+    <div className="min-w-0 bg-white flex flex-col h-full border border-gray-200/90 rounded-lg shadow-2xs overflow-hidden">
       {/* Header */}
-      <div className="px-4 py-3 bg-[#F8FAF9] border-b border-gray-200 flex items-center justify-between gap-2">
+      <div className={`px-4 py-4 border-b flex items-center justify-between gap-3 ${headerTone}`}>
         <div className="min-w-0">
-          <div className="flex items-center gap-1.5 text-xs font-medium text-[#007348]">
-            <TypeIcon className="w-3.5 h-3.5 shrink-0" />
+          <div className="flex items-center gap-2 text-xs font-semibold">
+            <span className={`w-7 h-7 shrink-0 inline-flex items-center justify-center rounded ${isCrmEvidence ? 'bg-white/10' : 'bg-[#007348]/10 text-[#007348]'}`}>
+              <TypeIcon className="w-4 h-4" />
+            </span>
             <span className="truncate">{typeMeta.label}</span>
           </div>
-          <div className="text-[11px] font-mono text-gray-500 truncate mt-0.5">
+          <div className={`text-[11px] font-mono truncate mt-2 pl-9 ${headerMutedTone}`}>
             {record.sourceLabel}
           </div>
         </div>
 
-        <div className="flex items-center gap-1 shrink-0">
+        <div className="flex items-center gap-1 shrink-0" aria-label="Evidence navigation">
           <button
             type="button"
             onClick={() => onSelectEvidence(prevId)}
             title="Previous linked record"
-            className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-200/70 rounded transition-colors cursor-pointer"
+            aria-label="Previous linked record"
+            className={`min-w-9 min-h-9 inline-flex items-center justify-center rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${headerControlTone}`}
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -95,7 +106,8 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
             type="button"
             onClick={() => onSelectEvidence(nextId)}
             title="Next linked record"
-            className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-200/70 rounded transition-colors cursor-pointer"
+            aria-label="Next linked record"
+            className={`min-w-9 min-h-9 inline-flex items-center justify-center rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${headerControlTone}`}
           >
             <ArrowRight className="w-4 h-4" />
           </button>
@@ -103,7 +115,8 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
             type="button"
             onClick={onClose}
             title="Close source view"
-            className="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-200/70 rounded transition-colors cursor-pointer ml-0.5"
+            aria-label="Close source view"
+            className={`min-w-9 min-h-9 inline-flex items-center justify-center rounded transition-colors cursor-pointer ml-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${headerControlTone}`}
           >
             <X className="w-4 h-4" />
           </button>
@@ -120,7 +133,7 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
             href={record.externalUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-white bg-[#007348] hover:bg-[#005E3A] rounded transition-colors whitespace-nowrap shrink-0"
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-white bg-[#007348] hover:bg-[#005E3A] rounded transition-colors whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348] focus-visible:ring-offset-2"
           >
             <span>Open Live Source</span>
             <ExternalLink className="w-3 h-3" />
@@ -129,15 +142,21 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
       )}
 
       {/* Scrollable Source Content */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
-        <div>
-          <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mb-1">
+      <div className="min-w-0 flex-1 overflow-y-auto p-4 sm:p-5 space-y-6 bg-white">
+        <div className="pb-4 border-b border-gray-200">
+          <div className="text-[10px] font-semibold uppercase tracking-wide text-[#007348] mb-2">
+            Evidence record
+          </div>
+          <h2 className="text-xl font-semibold text-gray-950 leading-snug break-words">
+            {record.title}
+          </h2>
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-gray-500 mt-2">
             {record.clientName && (
               <>
                 <button
                   type="button"
                   onClick={() => record.clientId && onOpenClientCrm(record.clientId)}
-                  className="font-medium text-[#007348] hover:underline cursor-pointer flex items-center gap-1"
+                  className="font-medium text-[#007348] hover:underline cursor-pointer flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348] focus-visible:ring-offset-2 rounded-sm"
                 >
                   <Building2 className="w-3.5 h-3.5" />
                   <span>{record.clientName}</span>
@@ -148,14 +167,11 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
             <span>{record.date}</span>
           </div>
 
-          <h2 className="text-base font-semibold text-gray-900 leading-snug">
-            {record.title}
-          </h2>
-          <div className="text-xs text-gray-500 mt-1">{record.authorOrPublisher}</div>
+          <div className="text-xs text-gray-600 mt-2">{record.authorOrPublisher}</div>
         </div>
 
         {/* Highlighted Excerpt */}
-        <div className="bg-[#EDF7F2] border border-[#00915A]/25 rounded p-3.5">
+        <div className="bg-[#EDF7F2] border-l-[3px] border-l-[#00915A] border-y border-r border-[#00915A]/20 rounded-r p-3.5">
           <div className="text-[11px] font-semibold uppercase tracking-wide text-[#007348] mb-1">
             Cited Signal in Rendez-Vous Brief
           </div>
@@ -175,40 +191,40 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
         {/* Facility Details */}
         {record.type === 'crm-facility' && record.facilityDetails && (
           <div className="space-y-4">
-            <div className="border border-gray-200 rounded divide-y divide-gray-200 text-xs">
-              <div className="grid grid-cols-3 px-3.5 py-2 bg-gray-50/70">
+            <div className="border border-gray-200 rounded divide-y divide-gray-200 text-xs overflow-hidden">
+              <div className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.5fr)] gap-3 px-3.5 py-2.5 bg-gray-50/70">
                 <span className="text-gray-500">Facility ID</span>
-                <span className="col-span-2 font-mono font-medium text-gray-900">
+                <span className="font-mono font-medium text-gray-900 break-words">
                   {record.facilityDetails.facilityCode}
                 </span>
               </div>
-              <div className="grid grid-cols-3 px-3.5 py-2">
+              <div className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.5fr)] gap-3 px-3.5 py-2.5">
                 <span className="text-gray-500">Structure</span>
-                <span className="col-span-2 text-gray-900 font-medium">
+                <span className="text-gray-900 font-medium break-words">
                   {record.facilityDetails.productType}
                 </span>
               </div>
-              <div className="grid grid-cols-3 px-3.5 py-2 bg-gray-50/70">
+              <div className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.5fr)] gap-3 px-3.5 py-2.5 bg-gray-50/70">
                 <span className="text-gray-500">Commitment</span>
-                <span className="col-span-2 font-mono font-semibold text-gray-900 tabular-nums">
+                <span className="font-mono font-semibold text-gray-900 tabular-nums break-words">
                   {record.facilityDetails.principal}
                 </span>
               </div>
-              <div className="grid grid-cols-3 px-3.5 py-2">
+              <div className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.5fr)] gap-3 px-3.5 py-2.5">
                 <span className="text-gray-500">Maturity</span>
-                <span className="col-span-2 text-gray-900 tabular-nums">
+                <span className="text-gray-900 tabular-nums break-words">
                   {record.facilityDetails.maturityDate}
                 </span>
               </div>
-              <div className="grid grid-cols-3 px-3.5 py-2 bg-gray-50/70">
+              <div className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.5fr)] gap-3 px-3.5 py-2.5 bg-gray-50/70">
                 <span className="text-gray-500">Pricing</span>
-                <span className="col-span-2 font-mono text-gray-900">
+                <span className="font-mono text-gray-900 break-words">
                   {record.facilityDetails.currentPricing}
                 </span>
               </div>
-              <div className="grid grid-cols-3 px-3.5 py-2">
+              <div className="grid grid-cols-[minmax(0,0.8fr)_minmax(0,1.5fr)] gap-3 px-3.5 py-2.5">
                 <span className="text-gray-500">Covenants</span>
-                <span className="col-span-2 text-gray-900 tabular-nums">
+                <span className="text-gray-900 tabular-nums break-words">
                   {record.facilityDetails.covenantLeverage}
                 </span>
               </div>
@@ -222,26 +238,23 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
                 {record.facilityDetails.timelineSteps.map((step, i) => (
                   <div
                     key={i}
-                    className={`px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs ${
-                      step.status === 'current' ? 'bg-[#EDF7F2]' : 'bg-white'
-                    }`}
+                    className={`px-3.5 py-2.5 flex items-center justify-between gap-2 text-xs ${step.status === 'current' ? 'bg-[#EDF7F2]' : 'bg-white'
+                      }`}
                   >
                     <div className="flex items-center gap-2 min-w-0">
                       <Calendar
-                        className={`w-3.5 h-3.5 shrink-0 ${
-                          step.status === 'current'
+                        className={`w-3.5 h-3.5 shrink-0 ${step.status === 'current'
                             ? 'text-[#00915A]'
                             : step.status === 'warning'
-                            ? 'text-amber-600'
-                            : 'text-gray-400'
-                        }`}
+                              ? 'text-amber-600'
+                              : 'text-gray-400'
+                          }`}
                       />
                       <span
-                        className={`truncate ${
-                          step.status === 'current'
+                        className={`truncate ${step.status === 'current'
                             ? 'font-semibold text-[#007348]'
                             : 'text-gray-800'
-                        }`}
+                          }`}
                       >
                         {step.label}
                       </span>
@@ -259,7 +272,7 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
         {/* Public Filing Details */}
         {record.type === 'public-filing' && record.filingDetails && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,9rem),1fr))] gap-2.5">
               {record.filingDetails.keyMetrics.map((m, i) => (
                 <div key={i} className="border border-gray-200 rounded p-2.5 bg-gray-50/60">
                   <div className="text-[11px] text-gray-500">{m.label}</div>
@@ -331,7 +344,7 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
         {/* Market / News Details */}
         {record.type === 'market-news' && record.marketDetails && (
           <div className="space-y-4">
-            <div className="grid grid-cols-2 gap-2.5">
+            <div className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,9rem),1fr))] gap-2.5">
               {record.marketDetails.metrics.map((m, idx) => (
                 <div
                   key={idx}
@@ -342,9 +355,8 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
                     {m.value}
                   </div>
                   <div
-                    className={`text-[11px] font-mono tabular-nums mt-0.5 ${
-                      m.positive ? 'text-[#007348]' : 'text-amber-700'
-                    }`}
+                    className={`text-[11px] font-mono tabular-nums mt-0.5 ${m.positive ? 'text-[#007348]' : 'text-amber-700'
+                      }`}
                   >
                     {m.change}
                   </div>
@@ -376,11 +388,11 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
                   key={id}
                   type="button"
                   onClick={() => onSelectEvidence(id)}
-                  className={`px-2 py-1 text-[11px] rounded border transition-colors cursor-pointer ${
-                    id === record.id
+                  aria-pressed={id === record.id}
+                  className={`max-w-full px-2.5 py-1.5 text-[11px] leading-snug rounded border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348] focus-visible:ring-offset-2 ${id === record.id
                       ? 'bg-[#00915A] text-white border-[#00915A]'
-                      : 'bg-white text-gray-700 border-gray-200 hover:border-[#00915A]'
-                  }`}
+                      : 'bg-white text-gray-700 border-gray-200 hover:border-[#00915A] hover:bg-[#F8FAF9]'
+                    }`}
                 >
                   {item.sourceLabel}
                 </button>
@@ -392,18 +404,18 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
 
       {/* Footer Actions */}
       {matchingClientBrief && (
-        <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex items-center justify-between gap-2">
+        <div className="px-4 py-3 bg-gray-50 border-t border-gray-200 flex flex-wrap items-center justify-between gap-2">
           <button
             type="button"
             onClick={() => onOpenClientCrm(matchingClientBrief.clientId)}
-            className="text-xs font-medium text-gray-700 hover:text-[#007348] transition-colors cursor-pointer truncate"
+            className="min-w-0 text-xs font-medium text-gray-700 hover:text-[#007348] transition-colors cursor-pointer truncate focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348] focus-visible:ring-offset-2 rounded-sm"
           >
             {matchingClientBrief.clientName} CRM
           </button>
           <button
             type="button"
             onClick={() => onDraftOutreach(matchingClientBrief)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-white bg-[#00915A] rounded hover:bg-[#007348] transition-colors cursor-pointer whitespace-nowrap shrink-0"
+            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-white bg-[#00915A] rounded hover:bg-[#007348] transition-colors cursor-pointer whitespace-nowrap shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348] focus-visible:ring-offset-2"
           >
             <Send className="w-3.5 h-3.5" />
             <span>Draft Outreach</span>

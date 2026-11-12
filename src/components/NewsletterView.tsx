@@ -3,11 +3,12 @@ import {
   ArrowUpRight,
   Bell,
   Calendar,
-  Check,
-  Edit3,
+  ChevronDown,
+  Clock,
   ExternalLink,
   FileText,
   Filter,
+  Globe,
   Landmark,
   Lock,
   Newspaper,
@@ -21,6 +22,7 @@ import {
   EVIDENCE_RECORDS,
   InlineLinkSegment,
   RM_PROFILE,
+  SpecialistColleague,
   SUPPRESSED_SIGNALS,
   TRIGGER_FEED,
   WEEKLY_CLIENT_BRIEFS,
@@ -29,6 +31,7 @@ import {
 interface NewsletterViewProps {
   onOpenEvidence: (evidenceId: string) => void;
   onDraftOutreach: (client: ClientBriefItem) => void;
+  onDraftSpecialistEmail: (member: SpecialistColleague) => void;
   onOpenClientCrm: (clientId: string) => void;
   activeEvidenceId: string | null;
   dejaDueItems: DejaDueItem[];
@@ -55,34 +58,16 @@ const getSourceIcon = (evidenceId?: string) => {
 export const NewsletterView: React.FC<NewsletterViewProps> = ({
   onOpenEvidence,
   onDraftOutreach,
+  onDraftSpecialistEmail,
   onOpenClientCrm,
   activeEvidenceId,
   dejaDueItems,
-  onUpdateDejaDueDate,
   editionLabel = 'Thursday, Nov 12, 2026 · 07:30 AM',
 }) => {
   const [auditTab, setAuditTab] = useState<'suppressed' | 'feed'>('suppressed');
-  const [scheduledReminders, setScheduledReminders] = useState<Record<string, boolean>>({});
-  const [editingDateId, setEditingDateId] = useState<string | null>(null);
-  const [draftDateValue, setDraftDateValue] = useState<string>('');
+  const [auditOpen, setAuditOpen] = useState(false);
 
-  const toggleReminder = (id: string) => {
-    setScheduledReminders((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
-  const startEditingDate = (item: DejaDueItem) => {
-    setEditingDateId(item.id);
-    setDraftDateValue(item.dateValue);
-  };
-
-  const saveEditedDate = (id: string) => {
-    if (draftDateValue) {
-      onUpdateDejaDueDate(id, draftDateValue);
-    }
-    setEditingDateId(null);
-  };
-
-  const renderSegments = (segments: InlineLinkSegment[]) => {
+  const renderSegments = (segments: InlineLinkSegment[], dark = false) => {
     return segments.map((seg, idx) => {
       if (seg.type === 'text') {
         return <React.Fragment key={idx}>{seg.content}</React.Fragment>;
@@ -97,14 +82,17 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
             type="button"
             onClick={() => seg.evidenceId && onOpenEvidence(seg.evidenceId)}
             title={`Inspect source: ${seg.sourceBadge || 'Evidence Record'}`}
-            className={`inline text-left font-medium underline underline-offset-3 decoration-[1.5px] transition-colors cursor-pointer rounded px-0.5 -mx-0.5 ${
-              isSelected
-                ? 'bg-[#00915A]/15 text-[#007348] decoration-[#007348]'
-                : 'text-[#007348] decoration-[#00915A]/45 hover:bg-[#EDF7F2] hover:decoration-[#00915A]'
-            }`}
+            className={`inline text-left font-medium underline underline-offset-3 decoration-[1.5px] transition-colors cursor-pointer rounded px-0.5 -mx-0.5 ${dark
+                ? isSelected
+                  ? 'bg-white/15 text-white decoration-white'
+                  : 'text-emerald-100 decoration-white/45 hover:bg-white/10 hover:decoration-white'
+                : isSelected
+                  ? 'bg-[#00915A]/15 text-[#007348] decoration-[#007348]'
+                  : 'text-[#007348] decoration-[#00915A]/45 hover:bg-[#EDF7F2] hover:decoration-[#00915A]'
+              }`}
           >
             <span>{seg.content}</span>
-            <span className="inline-flex items-center gap-0.5 text-[11px] font-mono text-[#00915A] no-underline align-baseline ml-1">
+            <span className={`inline-flex items-center gap-0.5 text-[11px] font-mono no-underline align-baseline ml-1 ${dark ? 'text-emerald-200' : 'text-[#00915A]'}`}>
               <Icon className="w-3 h-3 inline shrink-0 translate-y-[1px]" />
               <span>[{seg.sourceBadge}]</span>
             </span>
@@ -126,10 +114,10 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
   };
 
   return (
-    <div className="max-w-[840px] mx-auto bg-white border border-gray-200 rounded-md overflow-hidden">
+    <div className="max-w-[920px] mx-auto bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
       {/* Outlook Email Header Inside Reading Pane */}
-      <div className="px-6 py-4 border-b border-gray-200 bg-white">
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+      <div className="px-5 sm:px-6 py-3 border-b border-gray-200 bg-[#F8FAF9]">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 mb-2">
           <h1 className="text-lg font-semibold text-gray-900">
             (INTERNAL): This Week in a Changing World
           </h1>
@@ -157,7 +145,7 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
       </div>
 
       {/* BNP Paribas Rendez-Vous Institutional Masthead */}
-      <div className="bg-[#007348] text-white px-7 py-5">
+      <div className="bg-[#007348] text-white px-5 sm:px-7 py-5">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/15 pb-4 mb-4">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-[#00915A] border border-white/25 flex items-center justify-center shrink-0">
@@ -169,9 +157,6 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
               <div className="text-[11px] font-medium tracking-wider uppercase text-emerald-100">
                 BNP Paribas · Rendez-Vous Client Intelligence
               </div>
-              <div className="text-lg font-semibold tracking-tight text-white">
-                (INTERNAL): This Week in a Changing World
-              </div>
             </div>
           </div>
 
@@ -181,20 +166,20 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-          <div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0 text-xs">
+          <div className="sm:pr-4">
             <div className="text-emerald-100/80">Live Market Triggers Ingested</div>
             <div className="text-sm font-semibold text-white tabular-nums mt-0.5">
               11 Events → 3 Client Cards
             </div>
           </div>
-          <div>
+          <div className="sm:px-4 sm:border-l sm:border-white/20">
             <div className="text-emerald-100/80">Coverage Themes</div>
             <div className="text-sm font-medium text-white mt-0.5">
-              Rates (DNUT) · FX/Trade (Ternium) · Oil (CCI)
+              FX/Trade (Ternium) · Oil (CCI) · Rates (DNUT)
             </div>
           </div>
-          <div>
+          <div className="sm:pl-4 sm:border-l sm:border-white/20">
             <div className="text-emerald-100/80">Time-Triggered Queue</div>
             <div className="text-sm font-semibold text-white tabular-nums mt-0.5">
               {dejaDueItems.length} Déjà Due Follow-Ons Tracked
@@ -204,7 +189,7 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
       </div>
 
       {/* Priority Quick-Jump Index */}
-      <div className="px-7 py-4 bg-[#F8FAF9] border-b border-gray-200">
+      <div className="px-5 sm:px-7 py-4 bg-[#F8FAF9] border-b border-gray-200">
         <div className="text-xs text-gray-600 mb-3">
           Click any <span className="text-[#007348] font-medium underline">underlined citation</span> to inspect its summary card, or click the <ExternalLink className="w-3 h-3 inline text-[#007348]" /> icon beside public filings and market triggers to pop out directly to the real external source.
         </div>
@@ -214,7 +199,7 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
             <a
               key={client.clientId}
               href={`#client-brief-${client.clientId}`}
-              className="group block p-3 bg-white border border-gray-200 rounded hover:border-[#00915A] transition-colors"
+              className="group block p-3.5 bg-white border border-gray-200 border-l-2 border-l-[#00915A] rounded-r hover:border-[#00915A] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348]"
             >
               <div className="flex items-center justify-between text-[11px] text-gray-500 tabular-nums">
                 <span className="font-semibold text-[#007348]">Client 0{client.rank}</span>
@@ -237,14 +222,32 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
           <section
             key={client.clientId}
             id={`client-brief-${client.clientId}`}
-            className="px-7 py-6"
+            className="px-5 sm:px-7 py-6 sm:py-7"
           >
+            {/* Workflow Trigger: Changing World (market event) or Déjà Due (time-triggered) */}
+            <div className="flex flex-wrap items-start gap-x-2 gap-y-1 mb-3 text-xs">
+              <span
+                className={`inline-flex items-center gap-1 px-2 py-0.5 rounded font-semibold shrink-0 ${client.workflowTag === 'Déjà Due'
+                    ? 'bg-[#123B30] text-white'
+                    : 'bg-[#EDF7F2] text-[#007348] border border-[#00915A]/30'
+                  }`}
+              >
+                {client.workflowTag === 'Déjà Due' ? (
+                  <Clock className="w-3 h-3" />
+                ) : (
+                  <Globe className="w-3 h-3" />
+                )}
+                <span>{client.workflowTag}</span>
+              </span>
+              <span className="text-gray-700 leading-relaxed pt-px">{client.workflowTrigger}</span>
+            </div>
+
             {/* Header */}
             <div className="flex flex-wrap items-start justify-between gap-4 mb-3">
               <div>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mb-1">
-                  <span className="font-mono font-semibold text-[#007348]">
-                    0{client.rank}.
+                  <span className="inline-flex min-w-6 h-6 items-center justify-center rounded bg-[#EDF7F2] font-mono font-semibold text-[#007348]">
+                    0{client.rank}
                   </span>
                   <span>{client.storyTheme}</span>
                   <span aria-hidden="true">·</span>
@@ -253,14 +256,14 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
                 <button
                   type="button"
                   onClick={() => onOpenClientCrm(client.clientId)}
-                  className="text-lg font-semibold text-gray-900 hover:text-[#007348] transition-colors text-left flex items-center gap-1.5 cursor-pointer"
+                  className="text-xl font-semibold text-gray-950 hover:text-[#007348] transition-colors text-left flex items-center gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348] rounded-sm"
                 >
                   <span>{client.clientName}</span>
                   <ArrowUpRight className="w-4 h-4 text-gray-400" />
                 </button>
               </div>
 
-              <div className="text-left sm:text-right">
+              <div className="text-left sm:text-right sm:pl-4 sm:border-l sm:border-gray-200">
                 <div className="text-xs text-gray-500">Recommended Timing</div>
                 <div className="text-xs font-semibold text-[#007348] mt-0.5 flex items-center sm:justify-end gap-1">
                   <Calendar className="w-3.5 h-3.5" />
@@ -270,8 +273,8 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
             </div>
 
             {/* Brief Headline */}
-            <div className="bg-[#EDF7F2]/80 border border-[#00915A]/25 rounded px-4 py-3 mb-4">
-              <div className="text-xs font-semibold text-[#007348] mb-0.5">
+            <div className="bg-[#F3F8F5] border border-[#D5E8DE] border-l-[3px] border-l-[#00915A] rounded-r px-4 py-3.5 mb-5">
+              <div className="text-[11px] font-semibold uppercase tracking-wide text-[#007348] mb-1">
                 Brief Headline · BNP Role: {client.bnpRoleSummary}
               </div>
               <p className="text-sm font-medium text-gray-900 leading-snug">
@@ -279,20 +282,20 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
               </p>
             </div>
 
-            {/* Public Evidence vs. Synthetic CRM Context */}
-            <div className="space-y-3.5 text-[13.5px] leading-relaxed text-gray-700">
-              <div>
-                <div className="text-xs font-semibold text-gray-900 mb-1">
+            {/* Public Evidence vs. Demo CRM Context */}
+            <div className="space-y-4 text-[13px] leading-relaxed text-gray-700">
+              <div className="border-l-2 border-[#D5E8DE] pl-4">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-600 mb-1.5">
                   Public Evidence (BNP Relationship, Filings & Market Triggers)
                 </div>
                 <p>{renderSegments(client.publicEvidence)}</p>
               </div>
 
-              <div className="bg-[#F9FAFB] border border-gray-200 rounded px-4 py-3">
-                <div className="text-xs font-semibold text-gray-900 mb-1">
-                  Synthetic CRM Context (Internal CRM Note)
+              <div className="bg-[#123B30] border border-[#0B3027] rounded-md px-4 py-3.5 text-white shadow-sm">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-200 mb-1.5">
+                  Demo CRM Context (Internal CRM Note)
                 </div>
-                <p>{renderSegments(client.syntheticCrmContext)}</p>
+                <p className="text-emerald-50">{renderSegments(client.syntheticCrmContext, true)}</p>
               </div>
 
               <div>
@@ -327,7 +330,14 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
                     {client.recommendedTeam.map((member, mIdx) => (
                       <React.Fragment key={member.name}>
                         <span>
-                          <span className="font-medium text-[#007348]">{member.name}</span>{' '}
+                          <button
+                            type="button"
+                            onClick={() => onDraftSpecialistEmail(member)}
+                            title={`Email ${member.name} (${member.email})`}
+                            className="font-medium text-[#007348] underline underline-offset-2 decoration-[#00915A]/45 hover:decoration-[#007348] hover:bg-[#EDF7F2] rounded-sm px-0.5 -mx-0.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348]"
+                          >
+                            {member.name}
+                          </button>{' '}
                           <span className="text-gray-500">({member.role})</span>
                         </span>
                         {mIdx < client.recommendedTeam.length - 1 && (
@@ -348,7 +358,7 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
             </div>
 
             {/* Sources & Actions */}
-            <div className="mt-4 pt-3 border-t border-gray-100 flex flex-wrap items-center justify-between gap-3">
+            <div className="mt-5 pt-4 border-t border-gray-200 flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-1.5 text-xs">
                 <span className="text-gray-500 mr-1">Sources:</span>
                 {client.linkedEvidenceIds.map((evId) => {
@@ -360,13 +370,11 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
                       <button
                         type="button"
                         onClick={() => onOpenEvidence(evId)}
-                        className={`inline-flex items-center gap-1 px-2 py-1 text-xs transition-colors cursor-pointer whitespace-nowrap border ${
-                          rec.externalUrl ? 'rounded-l border-r-0' : 'rounded'
-                        } ${
-                          isActive
+                        className={`inline-flex items-center gap-1 px-2 py-1 text-xs transition-colors cursor-pointer whitespace-nowrap border ${rec.externalUrl ? 'rounded-l border-r-0' : 'rounded'
+                          } ${isActive
                             ? 'bg-[#00915A] text-white border-[#00915A]'
                             : 'bg-white text-gray-700 border-gray-200 hover:border-[#00915A] hover:text-[#007348]'
-                        }`}
+                          }`}
                       >
                         <span>{rec.sourceLabel}</span>
                       </button>
@@ -404,165 +412,66 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
                 </button>
               </div>
             </div>
+
+            {/* Linked Déjà Due Follow-On (today's trigger sets up the next check-in) */}
+            <button
+              type="button"
+              onClick={() => onOpenClientCrm(client.clientId)}
+              title="View this follow-on in Client CRM"
+              className="mt-3 w-full flex items-center gap-2 px-3 py-2 text-left text-xs font-medium text-[#007348] bg-[#F3F8F5] border border-[#D5E8DE] rounded hover:border-[#00915A] transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348]"
+            >
+              <Bell className="w-3.5 h-3.5 shrink-0" />
+              <span>{client.dejaDueNote}</span>
+            </button>
           </section>
         ))}
       </div>
 
-      {/* Feature: Déjà Due: Possible Client Follow-ons Due (with Editable Date!) */}
-      <section
-        id="deja-due-section"
-        className="px-7 py-6 bg-[#F8FAF9] border-t border-gray-200"
-      >
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-          <div>
-            <div className="text-[11px] font-semibold uppercase tracking-wider text-[#007348]">
-              Workflow 2 · Time & Event-Triggered Queue
-            </div>
-            <h2 className="text-base font-semibold text-gray-900">
-              Déjà Due: Possible Client Follow-ons Due
-            </h2>
-          </div>
-          <span className="text-xs text-gray-500">
-            Click any date or &ldquo;Edit Date&rdquo; to adjust follow-on timing
-          </span>
-        </div>
-
-        <div className="bg-white border border-gray-200 rounded divide-y divide-gray-200">
-          {dejaDueItems.map((item) => {
-            const isSet = !!scheduledReminders[item.id];
-            const isEditing = editingDateId === item.id;
-
-            return (
-              <div
-                key={item.id}
-                className="px-4 py-3 flex flex-wrap items-center justify-between gap-3 hover:bg-gray-50/70 transition-colors"
-              >
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-2 text-xs mb-0.5">
-                    {isEditing ? (
-                      <span className="inline-flex items-center gap-1.5">
-                        <input
-                          type="date"
-                          value={draftDateValue}
-                          onChange={(e) => setDraftDateValue(e.target.value)}
-                          className="border border-[#00915A] rounded px-1.5 py-0.5 text-xs font-mono text-gray-900 focus:outline-none"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => saveEditedDate(item.id)}
-                          className="px-2 py-0.5 bg-[#007348] text-white rounded text-[11px] font-medium hover:bg-[#005E3A] cursor-pointer"
-                        >
-                          Save
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => setEditingDateId(null)}
-                          className="px-1.5 py-0.5 text-gray-500 hover:text-gray-900 text-[11px] cursor-pointer"
-                        >
-                          Cancel
-                        </button>
-                      </span>
-                    ) : (
-                      <button
-                        type="button"
-                        onClick={() => startEditingDate(item)}
-                        title="Click to change follow-on date"
-                        className="inline-flex items-center gap-1 font-mono font-semibold text-[#007348] hover:underline tabular-nums cursor-pointer"
-                      >
-                        <span>{item.triggerTiming}</span>
-                        <Edit3 className="w-3 h-3 text-gray-400" />
-                      </button>
-                    )}
-
-                    <span className="text-gray-300">·</span>
-                    <button
-                      type="button"
-                      onClick={() => onOpenClientCrm(item.clientId)}
-                      className="font-semibold text-gray-900 hover:text-[#007348] cursor-pointer"
-                    >
-                      {item.clientName}
-                    </button>
-                    <span className="text-gray-300">·</span>
-                    <span className="text-gray-500">{item.specialists}</span>
-                  </div>
-                  <div className="text-xs font-medium text-gray-800">{item.title}</div>
-                  <div className="text-xs text-gray-600 mt-0.5">{item.actionRequired}</div>
-                </div>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <button
-                    type="button"
-                    onClick={() => startEditingDate(item)}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 text-xs text-gray-700 bg-white border border-gray-200 rounded hover:border-[#00915A] hover:text-[#007348] transition-colors cursor-pointer"
-                  >
-                    <Calendar className="w-3 h-3" />
-                    <span>Edit Date</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => onOpenEvidence(item.evidenceId)}
-                    className="px-2.5 py-1 text-xs text-gray-700 bg-white border border-gray-200 rounded hover:border-[#00915A] hover:text-[#007348] transition-colors cursor-pointer"
-                  >
-                    Source
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => toggleReminder(item.id)}
-                    className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded border transition-colors cursor-pointer ${
-                      isSet
-                        ? 'bg-[#EDF7F2] text-[#007348] border-[#00915A]/40'
-                        : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
-                    }`}
-                  >
-                    {isSet ? (
-                      <>
-                        <Check className="w-3 h-3" />
-                        <span>Reminder Set</span>
-                      </>
-                    ) : (
-                      <>
-                        <Bell className="w-3 h-3" />
-                        <span>Remind Me</span>
-                      </>
-                    )}
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
       {/* Relevance Over Volume: Suppressed Signals & Live Trigger Feed */}
-      <section className="px-7 py-6 bg-white border-t border-gray-200">
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-3">
-          <div className="flex items-center gap-2">
+      <section className="px-5 sm:px-7 py-4 bg-white border-t border-gray-200">
+        <button
+          type="button"
+          onClick={() => setAuditOpen((open) => !open)}
+          aria-expanded={auditOpen}
+          aria-controls="signal-filtering-audit"
+          className="w-full flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-left cursor-pointer rounded-sm group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348]"
+        >
+          <span className="flex items-center gap-2">
             <Filter className="w-4 h-4 text-[#00915A]" />
-            <h2 className="text-sm font-semibold text-gray-900">
+            <span className="text-sm font-semibold text-gray-900 group-hover:text-[#007348]">
               Signal Filtering Audit: Relevance Over Volume
-            </h2>
-          </div>
+            </span>
+          </span>
+          <span className="flex items-center gap-1.5 text-xs text-gray-500">
+            <span className="tabular-nums">11 Triggers → 3 Cards · 8 Filtered</span>
+            <span className="text-[#007348] font-medium">{auditOpen ? 'Hide' : 'View'}</span>
+            <ChevronDown
+              className={`w-3.5 h-3.5 text-[#007348] transition-transform ${auditOpen ? 'rotate-180' : ''}`}
+            />
+          </span>
+        </button>
 
+        {auditOpen && (
+          <div id="signal-filtering-audit" className="mt-3">
+        <div className="flex justify-end mb-3">
           <div className="flex items-center gap-1 bg-gray-100 p-0.5 rounded text-xs">
             <button
               type="button"
               onClick={() => setAuditTab('suppressed')}
-              className={`px-3 py-1 rounded transition-colors cursor-pointer ${
-                auditTab === 'suppressed'
+              className={`px-3 py-1 rounded transition-colors cursor-pointer ${auditTab === 'suppressed'
                   ? 'bg-white text-gray-900 font-medium shadow-2xs'
                   : 'text-gray-600 hover:text-gray-900'
-              }`}
+                }`}
             >
               Suppressed This Week (8)
             </button>
             <button
               type="button"
               onClick={() => setAuditTab('feed')}
-              className={`px-3 py-1 rounded transition-colors cursor-pointer ${
-                auditTab === 'feed'
+              className={`px-3 py-1 rounded transition-colors cursor-pointer ${auditTab === 'feed'
                   ? 'bg-white text-gray-900 font-medium shadow-2xs'
                   : 'text-gray-600 hover:text-gray-900'
-              }`}
+                }`}
             >
               Ingested Trigger Feed (11)
             </button>
@@ -639,6 +548,8 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
                 ))}
               </tbody>
             </table>
+          </div>
+        )}
           </div>
         )}
       </section>

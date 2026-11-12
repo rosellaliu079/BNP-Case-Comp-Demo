@@ -82,6 +82,7 @@ export interface DejaDueItem {
 export interface SpecialistColleague {
   name: string;
   role: string;
+  email: string;
 }
 
 export interface ClientBriefItem {
@@ -92,6 +93,9 @@ export interface ClientBriefItem {
   sector: string;
   hq: string;
   storyTheme: string;
+  workflowTag: 'Changing World' | 'Déjà Due';
+  workflowTrigger: string;
+  dejaDueNote: string;
   bnpRoleSummary: string;
   engageTiming: string;
   briefHeadline: string;
@@ -259,11 +263,11 @@ export const EVIDENCE_RECORDS: Record<string, EvidenceRecord> = {
     id: 'dnut-crm-sep26',
     type: 'meeting-note',
     isSyntheticCrm: true,
-    sourceLabel: 'Synthetic CRM Note · Sep 2026 Call',
+    sourceLabel: 'Demo CRM Note · Sep 2026 Call',
     clientId: 'krispy-kreme',
     clientName: 'Krispy Kreme (DNUT)',
     title: 'Treasury Coverage Call — Deleveraging Priority & Refinancing Timing',
-    date: 'September 2026 (Synthetic CRM Context)',
+    date: 'September 2026 (Demo CRM Context)',
     authorOrPublisher: 'Logged by Sophie Laurent (RM) · Internal CRM Only',
     highlightedExcerpt:
       '"Treasury stated the priority is cutting leverage via refranchising proceeds before any refinancing talk; agreed to revisit after Q3 results. Hedge book status on the ~$743M term loan must be verified in the 10-K before calling."',
@@ -342,7 +346,7 @@ export const EVIDENCE_RECORDS: Record<string, EvidenceRecord> = {
         { date: 'Aug 2025', label: '$1.25B Green Loan Closed (BNP JLA & Bookrunner)', status: 'completed' },
         { date: 'Oct 23, 2026', label: 'US–Mexico Section 232 Steel Talks Stall (50% Tariff)', status: 'warning' },
         { date: 'Nov 05, 2026', label: 'Banxico Cuts to 6.25%; MXN ~18.8–18.9 (Current)', status: 'current' },
-        { date: 'Year-End 2026', label: 'Déjà Due: Pesquería Slab Plant Start-Up & WC Shift', status: 'upcoming' },
+        { date: '~Jan 2027', label: 'Déjà Due: Pesquería Slab Plant Start-Up & WC Shift', status: 'upcoming' },
         { date: 'Jan 10 / Jul 1, 2027', label: 'Déjà Due: US–China Truce Expiry & USMCA Annual Review', status: 'upcoming' },
       ],
     },
@@ -351,11 +355,11 @@ export const EVIDENCE_RECORDS: Record<string, EvidenceRecord> = {
     id: 'ternium-crm-aug26',
     type: 'meeting-note',
     isSyntheticCrm: true,
-    sourceLabel: 'Synthetic CRM Note · Aug 2026 Meeting',
+    sourceLabel: 'Demo CRM Note · Aug 2026 Meeting',
     clientId: 'ternium-mexico',
     clientName: 'Ternium Mexico',
     title: 'Pesquería Commissioning Spend & MXN Hedging Discussion',
-    date: 'August 2026 (Synthetic CRM Context)',
+    date: 'August 2026 (Demo CRM Context)',
     authorOrPublisher: 'Logged by Coverage RM · Internal CRM Only',
     highlightedExcerpt:
       '"A large share of remaining Pesquería slab-plant spend is peso-denominated (local contractors, labor). Treasury noted they will look at hedging once commissioning dates firm up."',
@@ -435,7 +439,8 @@ export const EVIDENCE_RECORDS: Record<string, EvidenceRecord> = {
         { date: '2018 & 2022', label: 'BNP Global Coordinator & Admin Agent on $3.525B / $2.2B BBF', status: 'completed' },
         { date: 'Nov 03, 2026', label: 'Goldman Lifts Dec Brent Target to $105 ($140 Risk)', status: 'upcoming' },
         { date: 'Nov 06–10, 2026', label: 'Brent Drops 16% WoW, Briefly <$90 (Current)', status: 'current' },
-        { date: 'Nov 30, 2026', label: 'Déjà Due: Monthly Borrowing-Base Certificate Check', status: 'warning' },
+        { date: 'Nov 30, 2026', label: 'Monthly Borrowing-Base Certificate (Engage Before)', status: 'warning' },
+        { date: 'Dec 31, 2026', label: 'Déjà Due: Next Borrowing-Base Report Check', status: 'upcoming' },
       ],
     },
   },
@@ -443,11 +448,11 @@ export const EVIDENCE_RECORDS: Record<string, EvidenceRecord> = {
     id: 'cci-crm-oct26',
     type: 'meeting-note',
     isSyntheticCrm: true,
-    sourceLabel: 'Synthetic CRM Note · Oct 2026 Call',
+    sourceLabel: 'Demo CRM Note · Oct 2026 Call',
     clientId: 'castleton-commodities',
     clientName: 'Castleton Commodities (CCI)',
     title: 'Inventory Build & Accordion LC Capacity Inquiry',
-    date: 'October 2026 (Synthetic CRM Context)',
+    date: 'October 2026 (Demo CRM Context)',
     authorOrPublisher: 'Logged by Coverage RM · Internal CRM Only',
     highlightedExcerpt:
       '"CCI built crude and refined product inventory during the war-risk premium and asked about tapping the $1B accordion for extra letter-of-credit capacity."',
@@ -503,12 +508,188 @@ export const EVIDENCE_RECORDS: Record<string, EvidenceRecord> = {
 export const WEEKLY_CLIENT_BRIEFS: ClientBriefItem[] = [
   {
     rank: 1,
+    clientId: 'ternium-mexico',
+    clientName: 'Ternium Mexico',
+    tickerOrRegion: 'LatAm / North America Industrial',
+    sector: 'Steel Manufacturing & Low-Carbon Metals',
+    hq: 'Monterrey, Nuevo León',
+    storyTheme: 'FX & Trade Story · Peso Slide, Banxico Cut & Stalled Steel Talks',
+    workflowTag: 'Changing World',
+    workflowTrigger: 'The peso fell about 10% and Banxico cut rates.',
+    dejaDueNote: 'Déjà Due set: slab plant start-up, ~Jan 2027',
+    bnpRoleSummary: 'Joint lead arranger & bookrunner on $1.25B green loan (Aug 2025) for Pesquería low-carbon steel plant',
+    engageTiming: 'Engage This Week (Pre–Year-End Slab Plant Start-Up)',
+    briefHeadline:
+      'Peso is ~10% weaker than in early September and Banxico just cut. Ternium’s BNP-arranged green loan funds a plant due to start by year-end. Window to lock in peso costs and refresh tariff scenarios.',
+    publicEvidence: [
+      { type: 'text', content: 'BNP was one of seven joint lead arrangers and bookrunners on ' },
+      {
+        type: 'link',
+        content: 'Ternium Mexico’s $1.25B green loan (Aug 2025) for its Pesquería low-carbon steel plant',
+        evidenceId: 'ternium-green-loan',
+        sourceBadge: 'SEC / The Asset',
+      },
+      { type: 'text', content: ' (cold-rolling/galvanizing ramping; slab plant due by year-end 2026). ' },
+      {
+        type: 'link',
+        content: 'USD/MXN moved from 16.87 (Sep 4) to 18.81 (Oct 29) and ~18.9 on Nov 5 as Banxico cut to 6.25%, while US–Mexico Section 232 steel talks stalled Oct 23 leaving 50% duties intact',
+        evidenceId: 'market-mxn-banxico-232',
+        sourceBadge: 'Trading Econ / SteelOrbis',
+      },
+      { type: 'text', content: ' (options imply a 17.70–19.90 year-end range).' },
+    ],
+    syntheticCrmContext: [
+      { type: 'text', content: 'Per the ' },
+      {
+        type: 'link',
+        content: 'Aug 2026 CRM meeting note, a large share of remaining slab-plant spend is peso-denominated (local contractors, labor)',
+        evidenceId: 'ternium-crm-aug26',
+        sourceBadge: 'Demo CRM Note',
+      },
+      { type: 'text', content: ' and treasury noted they "will look at hedging once commissioning dates firm up."' },
+    ],
+    whyNowBullets: [
+      [
+        { type: 'text', content: 'Each dollar now buys ~10% more pesos than in September; remaining MXN capex can be locked in at today’s weaker rate while Banxico’s surprise cut raises further peso downside.' },
+      ],
+      [
+        { type: 'text', content: 'Year-end Pesquería slab plant start-up shifts the ' },
+        {
+          type: 'link',
+          content: '$1.25B green loan from construction to operations',
+          evidenceId: 'ternium-green-loan',
+          sourceBadge: 'Facility Schedule',
+        },
+        { type: 'text', content: ', transforming working-capital, imported-input trade finance, and green-KPI reporting needs while Section 232 stalls pressure US export volumes.' },
+      ],
+    ],
+    keyPointsToHit: [
+      'Unhedged remaining Pesquería MXN contractor/labor capex and forward/collar tenor ahead of commissioning.',
+      'Shift from construction financing to operational working capital and imported-input trade finance once the slab plant runs.',
+      '2027 North American volume scenarios if Section 232 50% duties stay intact, plus green-loan KPI reporting.',
+    ],
+    productsAndSpecialists: 'MXN forwards or collars · Interest-rate hedge (if floating) · Import trade finance · Green-loan KPI reporting support',
+    recommendedTeam: [
+      { name: 'Mateo Villalobos', role: 'MD, LatAm FX Structuring', email: 'mateo.villalobos@bnpparibas.com' },
+      { name: 'Elena Vance', role: 'Director, Trade Finance Americas', email: 'elena.vance@bnpparibas.com' },
+      { name: 'Lucie Moreau', role: 'VP, Sustainable Finance Advisory', email: 'lucie.moreau@bnpparibas.com' },
+    ],
+    keyContact: {
+      name: 'Mexico Treasury & Plant Finance',
+      role: 'Corporate Treasury',
+      email: 'treasury.mx@ternium-demo.com',
+    },
+    draftEmail: {
+      subject: 'Pesquería Slab Plant Commissioning — MXN Hedging Window (18.8–18.9) & Working Capital Transition',
+      body: `Dear Treasury Team,
+
+Following Banxico's cut to 6.25% and the peso's ~10% move from 16.87 in September to ~18.8–18.9 this week, we wanted to revisit our August conversation on hedging your remaining peso-denominated Pesquería contractor and labor outlays.
+
+With slab-plant start-up approaching at year-end, locking MXN forwards or collars at these weaker peso levels can protect construction budgets—and Mateo Villalobos (LatAm FX), Elena Vance (Trade Finance), and Lucie Moreau (Sustainable Finance) are ready to map out the shift from construction to operational working capital and green-loan KPI reporting under current Section 232 scenarios.
+
+Are you available next week for a focused 30-minute review?
+
+Best regards,
+Sophie Laurent
+BNP Paribas`,
+    },
+    linkedEvidenceIds: ['ternium-green-loan', 'market-mxn-banxico-232', 'ternium-crm-aug26'],
+  },
+  {
+    rank: 2,
+    clientId: 'castleton-commodities',
+    clientName: 'Castleton Commodities (CCI)',
+    tickerOrRegion: 'Global Commodity Merchant',
+    sector: 'Energy, Power, Metals & Freight Trading',
+    hq: 'Stamford, CT',
+    storyTheme: 'Commodity Story · Sharpest Oil Drop Since COVID Hits Borrowing Base',
+    workflowTag: 'Changing World',
+    workflowTrigger: 'Brent fell 16% in a week.',
+    dejaDueNote: 'Déjà Due set: next borrowing-base report, Dec',
+    bnpRoleSummary: 'Global coordinator & administrative agent on borrowing-base facility (2018 $3.525B & 2022 $2.2B renewals, $1B accordion)',
+    engageTiming: 'Engage Before Monthly Borrowing-Base Certificate',
+    briefHeadline:
+      'Brent fell 16% in a week and briefly broke $90. CCI’s BNP-agented borrowing base is marked to these prices. Check headroom, hedge margin and LC usage before the next borrowing-base report.',
+    publicEvidence: [
+      { type: 'text', content: 'BNP Paribas acted as global coordinator and administrative agent on CCI’s ' },
+      {
+        type: 'link',
+        content: '2018 ($3.525B) and 2022 ($2.2B, 17 banks, $1B accordion) borrowing-base facilities',
+        evidenceId: 'cci-borrowing-base',
+        sourceBadge: 'CCI / ABF Journal',
+      },
+      { type: 'text', content: ' backing merchanting letters of credit. This week, ' },
+      {
+        type: 'link',
+        content: 'Brent fell 16% in the week to Nov 6 (sharpest drop since COVID) and dipped below $90 on Nov 10',
+        evidenceId: 'market-brent-drop',
+        sourceBadge: 'Reuters / OilPrice',
+      },
+      { type: 'text', content: ' as Dated Brent slipped below futures—yet Goldman lifted its Dec target to $105 ($140 Gulf risk), creating acute two-way volatility.' },
+    ],
+    syntheticCrmContext: [
+      { type: 'text', content: 'Per your ' },
+      {
+        type: 'link',
+        content: 'Oct 2026 call note, CCI built crude and refined product inventory during the war premium and asked about using the $1B accordion for extra LC capacity',
+        evidenceId: 'cci-crm-oct26',
+        sourceBadge: 'Demo CRM Note',
+      },
+      { type: 'text', content: ' (demo assumes BNP remains agent on a monthly borrowing-base certificate schedule).' },
+    ],
+    whyNowBullets: [
+      [
+        { type: 'text', content: 'A borrowing base lends against inventory and receivables at market value: a 16% Brent drop directly shrinks collateral headroom, even as smaller cargoes require smaller LCs.' },
+      ],
+      [
+        { type: 'text', content: 'Hedged inventory means futures gains and physical losses settle on different timelines, creating short-term liquidity swings while tanker freight rates stayed elevated.' },
+      ],
+    ],
+    keyPointsToHit: [
+      'Mark-to-market borrowing-base availability vs. October’s certificate following the 16% crude sell-off.',
+      'Re-sizing LC accordion demand versus lower nominal cargo values and futures/physical margin timing mismatches.',
+      'Two-way crude & elevated tanker freight hedging if Iran diplomacy reverses back toward $105+.',
+    ],
+    productsAndSpecialists: 'Borrowing-base facility (accordion, interim redetermination) · Letters of credit · Commodity & freight hedging',
+    recommendedTeam: [
+      { name: 'Henrik Lindqvist', role: 'MD, Commodity Trade Finance', email: 'henrik.lindqvist@bnpparibas.com' },
+      { name: 'David K. Chen', role: 'Executive Director, Commodity Derivatives', email: 'david.chen@bnpparibas.com' },
+    ],
+    informationBarrierNotice:
+      'Private-Side Barrier: CCI’s inventory and borrowing-base data are confidential lender information. Never route this brief to BNP’s own commodity traders or research.',
+    keyContact: {
+      name: 'Global Treasury & Trade Operations',
+      role: 'CCI Treasury',
+      email: 'treasury@cci-demo.com',
+    },
+    draftEmail: {
+      subject: 'CCI Borrowing-Base Headroom & LC Capacity Check — Following 16% Brent Move',
+      body: `Hi Team,
+
+Following the sharp 16% pullback in Brent over the past week and Tuesday's dip below $90/bbl—while tanker freight remains elevated—we wanted to touch base ahead of your next borrowing-base certificate.
+
+When we spoke in October about your inventory build and potential use of the $1B accordion for additional LC capacity, pricing dynamics looked quite different. Henrik Lindqvist (Commodity Trade Finance) and David Chen (Commodity Derivatives) would be glad to run through updated mark-to-market availability, hedge-margin liquidity timing, and two-way upside protection scenarios.
+
+Do you have 20 minutes this week to review ahead of month-end reporting?
+
+Best regards,
+Sophie Laurent
+BNP Paribas`,
+    },
+    linkedEvidenceIds: ['cci-borrowing-base', 'market-brent-drop', 'cci-crm-oct26'],
+  },
+  {
+    rank: 3,
     clientId: 'krispy-kreme',
     clientName: 'Krispy Kreme (DNUT)',
     tickerOrRegion: 'US Mid-Cap · ~$577M Market Cap',
     sector: 'Consumer / Foodservice Franchisor',
     hq: 'Charlotte, NC',
     storyTheme: 'Rates Story · Hike Odds Meet 2028 Maturity',
+    workflowTag: 'Déjà Due',
+    workflowTrigger:
+      'You have set a reminder to revisit after Q3. Q3 landed Nov 5, and a December hike is now about 85% likely.',
+    dejaDueNote: 'Next Déjà Due: Dec 9 FOMC result · Mar 2027, 12 months to maturity',
     bnpRoleSummary:
       'Administrative, collateral & documentation agent on 2023 facility ($300M RCF + $700M TL, +$125M 2025 upsize); issues LCs',
     engageTiming: 'Engage Immediately (Pre–Dec 8–9 FOMC)',
@@ -544,7 +725,7 @@ export const WEEKLY_CLIENT_BRIEFS: ClientBriefItem[] = [
         type: 'link',
         content: 'Sep 2026 treasury call note, the client prioritized cutting leverage via refranchising proceeds before any refinancing talk ("revisit after Q3")',
         evidenceId: 'dnut-crm-sep26',
-        sourceBadge: 'Synthetic CRM Note',
+        sourceBadge: 'Demo CRM Note',
       },
       { type: 'text', content: '. Note: whether part of the term loan is swapped must be checked in the 10-K before calling.' },
     ],
@@ -577,8 +758,8 @@ export const WEEKLY_CLIENT_BRIEFS: ClientBriefItem[] = [
     ],
     productsAndSpecialists: 'Interest-rate swap or cap · Amend-and-extend or 2028 refinancing · International royalty cash management',
     recommendedTeam: [
-      { name: 'Marc-Antoine Lefèvre', role: 'MD, Corporate Rates & Derivatives Sales' },
-      { name: 'Claire-Marie Dubois', role: 'Director, Loan Capital Markets' },
+      { name: 'Marc-Antoine Lefèvre', role: 'MD, Corporate Rates & Derivatives Sales', email: 'marc-antoine.lefevre@bnpparibas.com' },
+      { name: 'Claire-Marie Dubois', role: 'Director, Loan Capital Markets', email: 'claire-marie.dubois@bnpparibas.com' },
     ],
     informationBarrierNotice:
       'Private-Side Barrier: As administrative agent, BNP receives private compliance certificates and covenant calculations. Visible to RM and Credit only—never route to public-side sales or research.',
@@ -605,189 +786,9 @@ Relationship Manager · Corporate Coverage, BNP Paribas`,
     },
     linkedEvidenceIds: ['dnut-credit-facility', 'dnut-q3-8k', 'market-oct-cpi', 'dnut-crm-sep26'],
   },
-  {
-    rank: 2,
-    clientId: 'ternium-mexico',
-    clientName: 'Ternium Mexico',
-    tickerOrRegion: 'LatAm / North America Industrial',
-    sector: 'Steel Manufacturing & Low-Carbon Metals',
-    hq: 'Monterrey, Nuevo León',
-    storyTheme: 'FX & Trade Story · Peso Slide, Banxico Cut & Stalled Steel Talks',
-    bnpRoleSummary: 'Joint lead arranger & bookrunner on $1.25B green loan (Aug 2025) for Pesquería low-carbon steel plant',
-    engageTiming: 'Engage This Week (Pre–Year-End Slab Plant Start-Up)',
-    briefHeadline:
-      'Peso is ~10% weaker than in early September and Banxico just cut. Ternium’s BNP-arranged green loan funds a plant due to start by year-end. Window to lock in peso costs and refresh tariff scenarios.',
-    publicEvidence: [
-      { type: 'text', content: 'BNP was one of seven joint lead arrangers and bookrunners on ' },
-      {
-        type: 'link',
-        content: 'Ternium Mexico’s $1.25B green loan (Aug 2025) for its Pesquería low-carbon steel plant',
-        evidenceId: 'ternium-green-loan',
-        sourceBadge: 'SEC / The Asset',
-      },
-      { type: 'text', content: ' (cold-rolling/galvanizing ramping; slab plant due by year-end 2026). ' },
-      {
-        type: 'link',
-        content: 'USD/MXN moved from 16.87 (Sep 4) to 18.81 (Oct 29) and ~18.9 on Nov 5 as Banxico cut to 6.25%, while US–Mexico Section 232 steel talks stalled Oct 23 leaving 50% duties intact',
-        evidenceId: 'market-mxn-banxico-232',
-        sourceBadge: 'Trading Econ / SteelOrbis',
-      },
-      { type: 'text', content: ' (options imply a 17.70–19.90 year-end range).' },
-    ],
-    syntheticCrmContext: [
-      { type: 'text', content: 'Per the ' },
-      {
-        type: 'link',
-        content: 'Aug 2026 CRM meeting note, a large share of remaining slab-plant spend is peso-denominated (local contractors, labor)',
-        evidenceId: 'ternium-crm-aug26',
-        sourceBadge: 'Synthetic CRM Note',
-      },
-      { type: 'text', content: ' and treasury noted they "will look at hedging once commissioning dates firm up."' },
-    ],
-    whyNowBullets: [
-      [
-        { type: 'text', content: 'Each dollar now buys ~10% more pesos than in September; remaining MXN capex can be locked in at today’s weaker rate while Banxico’s surprise cut raises further peso downside.' },
-      ],
-      [
-        { type: 'text', content: 'Year-end Pesquería slab plant start-up shifts the ' },
-        {
-          type: 'link',
-          content: '$1.25B green loan from construction to operations',
-          evidenceId: 'ternium-green-loan',
-          sourceBadge: 'Facility Schedule',
-        },
-        { type: 'text', content: ', transforming working-capital, imported-input trade finance, and green-KPI reporting needs while Section 232 stalls pressure US export volumes.' },
-      ],
-    ],
-    keyPointsToHit: [
-      'Unhedged remaining Pesquería MXN contractor/labor capex and forward/collar tenor ahead of commissioning.',
-      'Shift from construction financing to operational working capital and imported-input trade finance once the slab plant runs.',
-      '2027 North American volume scenarios if Section 232 50% duties stay intact, plus green-loan KPI reporting.',
-    ],
-    productsAndSpecialists: 'MXN forwards or collars · Interest-rate hedge (if floating) · Import trade finance · Green-loan KPI reporting support',
-    recommendedTeam: [
-      { name: 'Mateo Villalobos', role: 'MD, LatAm FX Structuring' },
-      { name: 'Elena Vance', role: 'Director, Trade Finance Americas' },
-      { name: 'Lucie Moreau', role: 'VP, Sustainable Finance Advisory' },
-    ],
-    coverageNote:
-      'Persona Note: In real life Ternium sits with BNP Mexico/LatAm coverage; for a US mid-market RM book, this models a synthetic twin (e.g., a US auto-parts supplier with Mexican plants buying Ternium-type steel).',
-    keyContact: {
-      name: 'Mexico Treasury & Plant Finance',
-      role: 'Corporate Treasury',
-      email: 'treasury.mx@ternium-demo.com',
-    },
-    draftEmail: {
-      subject: 'Pesquería Slab Plant Commissioning — MXN Hedging Window (18.8–18.9) & Working Capital Transition',
-      body: `Dear Treasury Team,
-
-Following Banxico's cut to 6.25% and the peso's ~10% move from 16.87 in September to ~18.8–18.9 this week, we wanted to revisit our August conversation on hedging your remaining peso-denominated Pesquería contractor and labor outlays.
-
-With slab-plant start-up approaching at year-end, locking MXN forwards or collars at these weaker peso levels can protect construction budgets—and Mateo Villalobos (LatAm FX), Elena Vance (Trade Finance), and Lucie Moreau (Sustainable Finance) are ready to map out the shift from construction to operational working capital and green-loan KPI reporting under current Section 232 scenarios.
-
-Are you available next week for a focused 30-minute review?
-
-Best regards,
-Sophie Laurent
-BNP Paribas`,
-    },
-    linkedEvidenceIds: ['ternium-green-loan', 'market-mxn-banxico-232', 'ternium-crm-aug26'],
-  },
-  {
-    rank: 3,
-    clientId: 'castleton-commodities',
-    clientName: 'Castleton Commodities (CCI)',
-    tickerOrRegion: 'Global Commodity Merchant',
-    sector: 'Energy, Power, Metals & Freight Trading',
-    hq: 'Stamford, CT',
-    storyTheme: 'Commodity Story · Sharpest Oil Drop Since COVID Hits Borrowing Base',
-    bnpRoleSummary: 'Global coordinator & administrative agent on borrowing-base facility (2018 $3.525B & 2022 $2.2B renewals, $1B accordion)',
-    engageTiming: 'Engage Before Monthly Borrowing-Base Certificate',
-    briefHeadline:
-      'Brent fell 16% in a week and briefly broke $90. CCI’s BNP-agented borrowing base is marked to these prices. Check headroom, hedge margin and LC usage before the next borrowing-base report.',
-    publicEvidence: [
-      { type: 'text', content: 'BNP Paribas acted as global coordinator and administrative agent on CCI’s ' },
-      {
-        type: 'link',
-        content: '2018 ($3.525B) and 2022 ($2.2B, 17 banks, $1B accordion) borrowing-base facilities',
-        evidenceId: 'cci-borrowing-base',
-        sourceBadge: 'CCI / ABF Journal',
-      },
-      { type: 'text', content: ' backing merchanting letters of credit. This week, ' },
-      {
-        type: 'link',
-        content: 'Brent fell 16% in the week to Nov 6 (sharpest drop since COVID) and dipped below $90 on Nov 10',
-        evidenceId: 'market-brent-drop',
-        sourceBadge: 'Reuters / OilPrice',
-      },
-      { type: 'text', content: ' as Dated Brent slipped below futures—yet Goldman lifted its Dec target to $105 ($140 Gulf risk), creating acute two-way volatility.' },
-    ],
-    syntheticCrmContext: [
-      { type: 'text', content: 'Per your ' },
-      {
-        type: 'link',
-        content: 'Oct 2026 call note, CCI built crude and refined product inventory during the war premium and asked about using the $1B accordion for extra LC capacity',
-        evidenceId: 'cci-crm-oct26',
-        sourceBadge: 'Synthetic CRM Note',
-      },
-      { type: 'text', content: ' (demo assumes BNP remains agent on a monthly borrowing-base certificate schedule).' },
-    ],
-    whyNowBullets: [
-      [
-        { type: 'text', content: 'A borrowing base lends against inventory and receivables at market value: a 16% Brent drop directly shrinks collateral headroom, even as smaller cargoes require smaller LCs.' },
-      ],
-      [
-        { type: 'text', content: 'Hedged inventory means futures gains and physical losses settle on different timelines, creating short-term liquidity swings while tanker freight rates stayed elevated.' },
-      ],
-    ],
-    keyPointsToHit: [
-      'Mark-to-market borrowing-base availability vs. October’s certificate following the 16% crude sell-off.',
-      'Re-sizing LC accordion demand versus lower nominal cargo values and futures/physical margin timing mismatches.',
-      'Two-way crude & elevated tanker freight hedging if Iran diplomacy reverses back toward $105+.',
-    ],
-    productsAndSpecialists: 'Borrowing-base facility (accordion, interim redetermination) · Letters of credit · Commodity & freight hedging',
-    recommendedTeam: [
-      { name: 'Henrik Lindqvist', role: 'MD, Commodity Trade Finance' },
-      { name: 'David K. Chen', role: 'Executive Director, Commodity Derivatives' },
-    ],
-    informationBarrierNotice:
-      'Private-Side Barrier: CCI’s inventory and borrowing-base data are confidential lender information. Never route this brief to BNP’s own commodity traders or research.',
-    keyContact: {
-      name: 'Global Treasury & Trade Operations',
-      role: 'CCI Treasury',
-      email: 'treasury@cci-demo.com',
-    },
-    draftEmail: {
-      subject: 'CCI Borrowing-Base Headroom & LC Capacity Check — Following 16% Brent Move',
-      body: `Hi Team,
-
-Following the sharp 16% pullback in Brent over the past week and Tuesday's dip below $90/bbl—while tanker freight remains elevated—we wanted to touch base ahead of your next borrowing-base certificate.
-
-When we spoke in October about your inventory build and potential use of the $1B accordion for additional LC capacity, pricing dynamics looked quite different. Henrik Lindqvist (Commodity Trade Finance) and David Chen (Commodity Derivatives) would be glad to run through updated mark-to-market availability, hedge-margin liquidity timing, and two-way upside protection scenarios.
-
-Do you have 20 minutes this week to review ahead of month-end reporting?
-
-Best regards,
-Sophie Laurent
-BNP Paribas`,
-    },
-    linkedEvidenceIds: ['cci-borrowing-base', 'market-brent-drop', 'cci-crm-oct26'],
-  },
 ];
 
 export const DEJA_DUE_ITEMS: DejaDueItem[] = [
-  {
-    id: 'dd-cci-cert',
-    clientId: 'castleton-commodities',
-    clientName: 'Castleton Commodities (CCI)',
-    triggerTiming: 'Nov 30, 2026',
-    dateValue: '2026-11-30',
-    triggerType: 'Calendar',
-    title: 'Next Monthly Borrowing-Base Certificate & Tranche Roll',
-    actionRequired: 'Re-check mark-to-market inventory headroom, LC accordion demand, and 364-day/2-year tranche maturities.',
-    specialists: 'Henrik Lindqvist (MD, Commodity Trade Finance)',
-    evidenceId: 'cci-borrowing-base',
-  },
   {
     id: 'dd-dnut-fomc',
     clientId: 'krispy-kreme',
@@ -801,11 +802,23 @@ export const DEJA_DUE_ITEMS: DejaDueItem[] = [
     evidenceId: 'market-oct-cpi',
   },
   {
+    id: 'dd-cci-cert',
+    clientId: 'castleton-commodities',
+    clientName: 'Castleton Commodities (CCI)',
+    triggerTiming: 'Dec 31, 2026',
+    dateValue: '2026-12-31',
+    triggerType: 'Calendar',
+    title: 'Next Monthly Borrowing-Base Certificate & Tranche Roll',
+    actionRequired: 'Re-check mark-to-market inventory headroom, LC accordion demand, and 364-day/2-year tranche maturities.',
+    specialists: 'Henrik Lindqvist (MD, Commodity Trade Finance)',
+    evidenceId: 'cci-borrowing-base',
+  },
+  {
     id: 'dd-tx-startup',
     clientId: 'ternium-mexico',
     clientName: 'Ternium Mexico',
-    triggerTiming: 'Dec 31, 2026',
-    dateValue: '2026-12-31',
+    triggerTiming: '~Jan 2027',
+    dateValue: '2027-01-04',
     triggerType: 'Calendar',
     title: 'Pesquería Slab Plant Start-Up Transition',
     actionRequired: 'Transition $1.25B green loan coverage from construction to operational working capital, import trade finance, and green-KPI reporting.',
@@ -1015,7 +1028,7 @@ export const INITIAL_EMAILS: OutlookEmail[] = [
     senderEmail: 'rendez-vous@bnpparibas.com',
     senderRole: 'BNP Paribas RM Client Intelligence',
     subject: '(INTERNAL): This Week in a Changing World',
-    preview: '3 clients matched from 11 live market triggers: Krispy Kreme (CPI/2028 refi), Ternium Mexico (MXN/Banxico/232), Castleton (Brent -16%) + Déjà Due...',
+    preview: '3 clients matched from 11 live market triggers: Ternium Mexico (MXN/Banxico/232), Castleton (Brent -16%), Krispy Kreme (CPI/2028 refi) + Déjà Due...',
     timestamp: '7:30 AM',
     dateLabel: 'Thu, Nov 12, 2026 · 07:30 AM',
     clientTag: '3 Clients · 8 Filtered',
@@ -1167,8 +1180,8 @@ export const CLIENT_DOSSIERS: ClientDossier[] = [
     ],
     openOpportunity: 'Interest-Rate Swap/Cap + 1H 2027 Amend-and-Extend / Refinancing + International Royalty FX',
     recommendedTeam: [
-      { name: 'Marc-Antoine Lefèvre', role: 'MD, Corporate Rates & Derivatives Sales' },
-      { name: 'Claire-Marie Dubois', role: 'Director, Loan Capital Markets' },
+      { name: 'Marc-Antoine Lefèvre', role: 'MD, Corporate Rates & Derivatives Sales', email: 'marc-antoine.lefevre@bnpparibas.com' },
+      { name: 'Claire-Marie Dubois', role: 'Director, Loan Capital Markets', email: 'claire-marie.dubois@bnpparibas.com' },
     ],
     recentEvidenceIds: ['dnut-credit-facility', 'dnut-q3-8k', 'market-oct-cpi', 'dnut-crm-sep26'],
     informationBarrierNotice:
@@ -1200,9 +1213,9 @@ export const CLIENT_DOSSIERS: ClientDossier[] = [
     ],
     openOpportunity: 'MXN Forwards/Collars (~18.8–18.9) + Working Capital & Import Trade Finance + Green KPI Support',
     recommendedTeam: [
-      { name: 'Mateo Villalobos', role: 'MD, LatAm FX Structuring' },
-      { name: 'Elena Vance', role: 'Director, Trade Finance Americas' },
-      { name: 'Lucie Moreau', role: 'VP, Sustainable Finance Advisory' },
+      { name: 'Mateo Villalobos', role: 'MD, LatAm FX Structuring', email: 'mateo.villalobos@bnpparibas.com' },
+      { name: 'Elena Vance', role: 'Director, Trade Finance Americas', email: 'elena.vance@bnpparibas.com' },
+      { name: 'Lucie Moreau', role: 'VP, Sustainable Finance Advisory', email: 'lucie.moreau@bnpparibas.com' },
     ],
     recentEvidenceIds: ['ternium-green-loan', 'market-mxn-banxico-232', 'ternium-crm-aug26'],
   },
@@ -1232,8 +1245,8 @@ export const CLIENT_DOSSIERS: ClientDossier[] = [
     ],
     openOpportunity: 'Borrowing-Base Headroom Check, LC Accordion Review, Commodity & Freight Hedging',
     recommendedTeam: [
-      { name: 'Henrik Lindqvist', role: 'MD, Commodity Trade Finance' },
-      { name: 'David K. Chen', role: 'Executive Director, Commodity Derivatives' },
+      { name: 'Henrik Lindqvist', role: 'MD, Commodity Trade Finance', email: 'henrik.lindqvist@bnpparibas.com' },
+      { name: 'David K. Chen', role: 'Executive Director, Commodity Derivatives', email: 'david.chen@bnpparibas.com' },
     ],
     recentEvidenceIds: ['cci-borrowing-base', 'market-brent-drop', 'cci-crm-oct26'],
     informationBarrierNotice:

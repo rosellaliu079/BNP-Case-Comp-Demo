@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import {
   ClientBriefItem,
+  SpecialistColleague,
   DEJA_DUE_ITEMS,
   DejaDueItem,
   EVIDENCE_RECORDS,
@@ -210,6 +211,18 @@ export default function App() {
     });
   };
 
+  // Opens a blank email pre-addressed to the specialist (no pre-written content).
+  const handleDraftSpecialistEmail = (member: SpecialistColleague) => {
+    setMainSection('mail');
+    setActiveEvidenceId(null);
+    setComposeState({
+      open: true,
+      to: member.email,
+      subject: '',
+      body: '',
+    });
+  };
+
   const handleOpenClientCrm = (clientId: string) => {
     setSelectedClientId(clientId);
     setMainSection('crm');
@@ -280,7 +293,9 @@ export default function App() {
       case 'compose':
         setMainSection('mail');
         setActiveFolder('inbox');
-        handleDraftOutreach(WEEKLY_CLIENT_BRIEFS[0]);
+        handleDraftOutreach(
+          WEEKLY_CLIENT_BRIEFS.find((brief) => brief.clientId === 'krispy-kreme') ?? WEEKLY_CLIENT_BRIEFS[0]
+        );
         break;
       case 'crm':
         setComposeState(null);
@@ -292,7 +307,7 @@ export default function App() {
   const jumpToDejaDue = () => {
     handleSelectPrototypeFrame('newsletter');
     window.setTimeout(() => {
-      document.getElementById('deja-due-section')?.scrollIntoView({ behavior: 'smooth' });
+      document.getElementById('client-brief-krispy-kreme')?.scrollIntoView({ behavior: 'smooth' });
     }, 60);
   };
 
@@ -986,6 +1001,7 @@ export default function App() {
                   <NewsletterView
                     onOpenEvidence={handleOpenEvidence}
                     onDraftOutreach={handleDraftOutreach}
+                    onDraftSpecialistEmail={handleDraftSpecialistEmail}
                     onOpenClientCrm={handleOpenClientCrm}
                     activeEvidenceId={activeEvidenceId}
                     dejaDueItems={dejaDueItems}
