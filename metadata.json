@@ -1,0 +1,6 @@
+{
+  "name": "BNP Paribas RM Weekly Client Intelligence",
+  "description": "Outlook-style relationship manager inbox and interactive weekly client intelligence newsletter with hyperlinked CRM records, meeting notes, email threads, and market triggers.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
