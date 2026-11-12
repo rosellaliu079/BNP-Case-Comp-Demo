@@ -17,6 +17,7 @@ import {
   Menu,
   Newspaper,
   Paperclip,
+  Plus,
   Pin,
   Reply,
   ReplyAll,
@@ -45,6 +46,7 @@ import { NewsletterView } from './components/NewsletterView';
 import { EvidencePanel } from './components/EvidencePanel';
 import { ComposeModal } from './components/ComposeModal';
 import { CrmBookView } from './components/CrmBookView';
+import { NewDejaDueInput, NewDejaDueModal } from './components/NewDejaDueModal';
 
 type MailFolder = 'inbox' | 'briefs' | 'flagged' | 'sent' | 'archive';
 
@@ -76,6 +78,7 @@ export default function App() {
   } | null>(null);
 
   const [dejaDueItems, setDejaDueItems] = useState<DejaDueItem[]>(DEJA_DUE_ITEMS);
+  const [newDejaDueOpen, setNewDejaDueOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   const showToast = (msg: string) => {
@@ -103,6 +106,36 @@ export default function App() {
       )
     );
     showToast(`Updated Déjà Due follow-on date to ${formatted}.`);
+  };
+
+  // RM-created reminder from the inbox ribbon; joins the same list Frame 5 shows.
+  const handleCreateDejaDue = ({ clientId, clientName, followOnType, dateIso, note }: NewDejaDueInput) => {
+    const parsed = new Date(`${dateIso}T12:00:00`);
+    const formatted = Number.isNaN(parsed.getTime())
+      ? dateIso
+      : parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+    const newItem: DejaDueItem = {
+      id: `dd-custom-${Date.now()}`,
+      clientId,
+      clientName,
+      triggerTiming: formatted,
+      dateValue: dateIso,
+      triggerType: 'Calendar',
+      title: followOnType,
+      actionRequired: note || 'Reminder you set from the inbox.',
+      specialists: `Set by ${RM_PROFILE.name}`,
+    };
+
+    setDejaDueItems((prev) => {
+      // Keep dated reminders in chronological order; leave event-triggered items where they are.
+      const insertAt = prev.findIndex((item) => item.triggerType === 'Calendar' && item.dateValue > dateIso);
+      return insertAt === -1
+        ? [...prev, newItem]
+        : [...prev.slice(0, insertAt), newItem, ...prev.slice(insertAt)];
+    });
+    setNewDejaDueOpen(false);
+    showToast(`Déjà Due set: ${followOnType} · ${clientName} · ${formatted}.`);
   };
 
   const selectedEmail = useMemo(
@@ -652,7 +685,16 @@ export default function App() {
               className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-[#007348] bg-[#EDF7F2] hover:bg-[#DDF0E6] rounded cursor-pointer whitespace-nowrap"
             >
               <Clock className="w-3.5 h-3.5" />
-              <span>Déjà Due (7)</span>
+              <span>Déjà Due ({dejaDueItems.length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => setNewDejaDueOpen(true)}
+              title="Set a reminder to follow up with a client later"
+              className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium text-white bg-[#00915A] hover:bg-[#007348] rounded cursor-pointer whitespace-nowrap"
+            >
+              <Plus className="w-3.5 h-3.5" />
+              <span>New Déjà Due</span>
             </button>
           </div>
         </div>
@@ -888,7 +930,7 @@ export default function App() {
                         <Bell className="w-3.5 h-3.5" />
                         <span>Déjà Due Queue</span>
                       </span>
-                      <span className="font-mono text-[11px] tabular-nums">7</span>
+                      <span className="font-mono text-[11px] tabular-nums">{dejaDueItems.length}</span>
                     </button>
                   </div>
                 )}
@@ -1109,6 +1151,10 @@ export default function App() {
           </>
         )}
       </div>
+
+      {newDejaDueOpen && (
+        <NewDejaDueModal onClose={() => setNewDejaDueOpen(false)} onSave={handleCreateDejaDue} />
+      )}
 
       {toastMessage && (
         <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-50 bg-[#111827] text-white text-xs px-4 py-2 rounded shadow-lg border border-gray-700">

@@ -76,13 +76,52 @@ export interface DejaDueItem {
   title: string;
   actionRequired: string;
   specialists: string;
-  evidenceId: string;
+  /** Source record; absent for reminders the RM creates from the inbox. */
+  evidenceId?: string;
 }
 
 export interface SpecialistColleague {
   name: string;
   role: string;
   email: string;
+}
+
+export interface CitationRef {
+  evidenceId: string;
+  badge: string;
+}
+
+export interface CitedLine {
+  text: string;
+  citations: CitationRef[];
+}
+
+/** A follow-up Rendez-Vous suggests; nothing is set until the RM clicks. */
+export interface DejaDueSuggestion {
+  followUp: string;
+  timing: string;
+  why: CitedLine;
+  /** Matching Frame 5 Déjà Due item. If it is already tracked there, page 1 shows it as set. */
+  dejaDueItemId?: string;
+}
+
+/** Page 1 (newsletter) card content: every client renders from this one template. */
+export interface BriefCard {
+  timingBadge: string;
+  triggerTag: 'Trigger: Market + CRM' | 'Trigger: Déjà Due + Market';
+  privateSideTooltip?: string;
+  /** "Came due" banner lines (only when a reminder the RM set earlier came due). */
+  cameDue?: CitedLine[];
+  theMove: string;
+  angle?: string;
+  whyNow: [CitedLine, CitedLine];
+  ask: [string, string];
+  beforeYouCall?: string;
+  bring: string;
+  bnpRole: CitedLine;
+  suggestedFollowUps: DejaDueSuggestion[];
+  assumption?: string;
+  todaysCall: { move: string; callBy: string };
 }
 
 export interface ClientBriefItem {
@@ -93,9 +132,7 @@ export interface ClientBriefItem {
   sector: string;
   hq: string;
   storyTheme: string;
-  workflowTag: 'Changing World' | 'Déjà Due';
-  workflowTrigger: string;
-  dejaDueNote: string;
+  card: BriefCard;
   bnpRoleSummary: string;
   engageTiming: string;
   briefHeadline: string;
@@ -514,9 +551,44 @@ export const WEEKLY_CLIENT_BRIEFS: ClientBriefItem[] = [
     sector: 'Steel Manufacturing & Low-Carbon Metals',
     hq: 'Monterrey, Nuevo León',
     storyTheme: 'FX & Trade Story · Peso Slide, Banxico Cut & Stalled Steel Talks',
-    workflowTag: 'Changing World',
-    workflowTrigger: 'The peso fell about 10% and Banxico cut rates.',
-    dejaDueNote: 'Déjà Due set: slab plant start-up, ~Jan 2027',
+    card: {
+      timingBadge: 'Engage this week · by Nov 13',
+      triggerTag: 'Trigger: Market + CRM',
+      theMove:
+        'Call treasury to propose hedging the remaining peso build-out costs before the slab plant starts up at year-end.',
+      angle: 'Lock in today’s favorable rate before a rebound.',
+      whyNow: [
+        {
+          text: 'The peso is ~10% weaker since September (USD/MXN 16.87 on Sep 4 → ~18.9 on Nov 5) and Banxico cut to 6.25%.',
+          citations: [{ evidenceId: 'market-mxn-banxico-232', badge: 'Trading Econ / SteelOrbis' }],
+        },
+        {
+          text: 'In August, treasury said it would “look at hedging once commissioning dates firm up”. The slab plant is now due to start by year-end.',
+          citations: [{ evidenceId: 'ternium-crm-aug26', badge: 'Demo CRM Note · Aug 2026' }],
+        },
+      ],
+      ask: [
+        'How much of the remaining Pesquería spend is in pesos, and is any of it hedged?',
+        'Once the plant runs, what are your working-capital needs for imported inputs?',
+      ],
+      bring: 'MXN forwards or collars · import trade finance',
+      bnpRole: {
+        text: 'Joint lead arranger & bookrunner on the $1.25B green loan (Aug 2025)',
+        citations: [{ evidenceId: 'ternium-green-loan', badge: 'SEC / The Asset' }],
+      },
+      suggestedFollowUps: [
+        {
+          followUp: 'Slab plant start-up',
+          timing: '~Jan 2027',
+          why: {
+            text: 'The green loan shifts from construction to operations, opening working-capital and trade-finance needs.',
+            citations: [{ evidenceId: 'ternium-green-loan', badge: 'Facility Schedule' }],
+          },
+          dejaDueItemId: 'dd-tx-startup',
+        },
+      ],
+      todaysCall: { move: 'Hedge remaining peso build-out costs', callBy: 'Fri, Nov 13' },
+    },
     bnpRoleSummary: 'Joint lead arranger & bookrunner on $1.25B green loan (Aug 2025) for Pesquería low-carbon steel plant',
     engageTiming: 'Engage This Week (Pre–Year-End Slab Plant Start-Up)',
     briefHeadline:
@@ -597,99 +669,74 @@ BNP Paribas`,
   },
   {
     rank: 2,
-    clientId: 'castleton-commodities',
-    clientName: 'Castleton Commodities (CCI)',
-    tickerOrRegion: 'Global Commodity Merchant',
-    sector: 'Energy, Power, Metals & Freight Trading',
-    hq: 'Stamford, CT',
-    storyTheme: 'Commodity Story · Sharpest Oil Drop Since COVID Hits Borrowing Base',
-    workflowTag: 'Changing World',
-    workflowTrigger: 'Brent fell 16% in a week.',
-    dejaDueNote: 'Déjà Due set: next borrowing-base report, Dec',
-    bnpRoleSummary: 'Global coordinator & administrative agent on borrowing-base facility (2018 $3.525B & 2022 $2.2B renewals, $1B accordion)',
-    engageTiming: 'Engage Before Monthly Borrowing-Base Certificate',
-    briefHeadline:
-      'Brent fell 16% in a week and briefly broke $90. CCI’s BNP-agented borrowing base is marked to these prices. Check headroom, hedge margin and LC usage before the next borrowing-base report.',
-    publicEvidence: [
-      { type: 'text', content: 'BNP Paribas acted as global coordinator and administrative agent on CCI’s ' },
-      {
-        type: 'link',
-        content: '2018 ($3.525B) and 2022 ($2.2B, 17 banks, $1B accordion) borrowing-base facilities',
-        evidenceId: 'cci-borrowing-base',
-        sourceBadge: 'CCI / ABF Journal',
-      },
-      { type: 'text', content: ' backing merchanting letters of credit. This week, ' },
-      {
-        type: 'link',
-        content: 'Brent fell 16% in the week to Nov 6 (sharpest drop since COVID) and dipped below $90 on Nov 10',
-        evidenceId: 'market-brent-drop',
-        sourceBadge: 'Reuters / OilPrice',
-      },
-      { type: 'text', content: ' as Dated Brent slipped below futures—yet Goldman lifted its Dec target to $105 ($140 Gulf risk), creating acute two-way volatility.' },
-    ],
-    syntheticCrmContext: [
-      { type: 'text', content: 'Per your ' },
-      {
-        type: 'link',
-        content: 'Oct 2026 call note, CCI built crude and refined product inventory during the war premium and asked about using the $1B accordion for extra LC capacity',
-        evidenceId: 'cci-crm-oct26',
-        sourceBadge: 'Demo CRM Note',
-      },
-      { type: 'text', content: ' (demo assumes BNP remains agent on a monthly borrowing-base certificate schedule).' },
-    ],
-    whyNowBullets: [
-      [
-        { type: 'text', content: 'A borrowing base lends against inventory and receivables at market value: a 16% Brent drop directly shrinks collateral headroom, even as smaller cargoes require smaller LCs.' },
-      ],
-      [
-        { type: 'text', content: 'Hedged inventory means futures gains and physical losses settle on different timelines, creating short-term liquidity swings while tanker freight rates stayed elevated.' },
-      ],
-    ],
-    keyPointsToHit: [
-      'Mark-to-market borrowing-base availability vs. October’s certificate following the 16% crude sell-off.',
-      'Re-sizing LC accordion demand versus lower nominal cargo values and futures/physical margin timing mismatches.',
-      'Two-way crude & elevated tanker freight hedging if Iran diplomacy reverses back toward $105+.',
-    ],
-    productsAndSpecialists: 'Borrowing-base facility (accordion, interim redetermination) · Letters of credit · Commodity & freight hedging',
-    recommendedTeam: [
-      { name: 'Henrik Lindqvist', role: 'MD, Commodity Trade Finance', email: 'henrik.lindqvist@bnpparibas.com' },
-      { name: 'David K. Chen', role: 'Executive Director, Commodity Derivatives', email: 'david.chen@bnpparibas.com' },
-    ],
-    informationBarrierNotice:
-      'Private-Side Barrier: CCI’s inventory and borrowing-base data are confidential lender information. Never route this brief to BNP’s own commodity traders or research.',
-    keyContact: {
-      name: 'Global Treasury & Trade Operations',
-      role: 'CCI Treasury',
-      email: 'treasury@cci-demo.com',
-    },
-    draftEmail: {
-      subject: 'CCI Borrowing-Base Headroom & LC Capacity Check — Following 16% Brent Move',
-      body: `Hi Team,
-
-Following the sharp 16% pullback in Brent over the past week and Tuesday's dip below $90/bbl—while tanker freight remains elevated—we wanted to touch base ahead of your next borrowing-base certificate.
-
-When we spoke in October about your inventory build and potential use of the $1B accordion for additional LC capacity, pricing dynamics looked quite different. Henrik Lindqvist (Commodity Trade Finance) and David Chen (Commodity Derivatives) would be glad to run through updated mark-to-market availability, hedge-margin liquidity timing, and two-way upside protection scenarios.
-
-Do you have 20 minutes this week to review ahead of month-end reporting?
-
-Best regards,
-Sophie Laurent
-BNP Paribas`,
-    },
-    linkedEvidenceIds: ['cci-borrowing-base', 'market-brent-drop', 'cci-crm-oct26'],
-  },
-  {
-    rank: 3,
     clientId: 'krispy-kreme',
     clientName: 'Krispy Kreme (DNUT)',
     tickerOrRegion: 'US Mid-Cap · ~$577M Market Cap',
     sector: 'Consumer / Foodservice Franchisor',
     hq: 'Charlotte, NC',
     storyTheme: 'Rates Story · Hike Odds Meet 2028 Maturity',
-    workflowTag: 'Déjà Due',
-    workflowTrigger:
-      'You have set a reminder to revisit after Q3. Q3 landed Nov 5, and a December hike is now about 85% likely.',
-    dejaDueNote: 'Next Déjà Due: Dec 9 FOMC result · Mar 2027, 12 months to maturity',
+    card: {
+      timingBadge: 'Before Dec 8–9 FOMC · by Nov 16',
+      triggerTag: 'Trigger: Déjà Due + Market',
+      privateSideTooltip:
+        'As administrative agent, BNP receives private compliance certificates and covenant calculations. Visible to RM and Credit only. Never route to public-side sales or research.',
+      cameDue: [
+        {
+          text: 'You set this after the Sep 2026 treasury call: “Revisit after Q3.”',
+          citations: [{ evidenceId: 'dnut-crm-sep26', badge: 'Demo CRM Note · Sep 2026' }],
+        },
+        {
+          text: 'Q3 landed Nov 5.',
+          citations: [{ evidenceId: 'dnut-q3-8k', badge: 'SEC Form 8-K' }],
+        },
+      ],
+      theMove:
+        'Call treasury now to discuss hedging the floating-rate debt before the Dec 8–9 FOMC, and open the refinancing timeline.',
+      whyNow: [
+        {
+          text: 'Hot October CPI pushed December hike odds to ~85%. With ~$900M of floating debt, each 25bp hike adds ~$2.25M a year in interest if unhedged.',
+          citations: [
+            { evidenceId: 'market-oct-cpi', badge: 'CME FedWatch' },
+            { evidenceId: 'dnut-credit-facility', badge: 'SEC 10-K' },
+          ],
+        },
+        {
+          text: 'The March 2028 maturity goes current in March 2027, which puts the refinancing window in 1H 2027.',
+          citations: [{ evidenceId: 'dnut-credit-facility', badge: 'Facility Schedule' }],
+        },
+      ],
+      ask: [
+        'How much of the term loan is hedged, and when do the hedges roll off?',
+        'With Q3 done, are you ready to talk about the refinancing timeline?',
+      ],
+      beforeYouCall: 'Check the 10-K for existing swaps.',
+      bring: 'Interest-rate swap or cap · amend-and-extend',
+      bnpRole: {
+        text: 'Administrative, collateral & documentation agent on the 2023 facility ($300M RCF + $700M TL, +$125M 2025 upsize, matures Mar 2028)',
+        citations: [{ evidenceId: 'dnut-credit-facility', badge: 'SEC Proxy / 10-Q' }],
+      },
+      suggestedFollowUps: [
+        {
+          followUp: 'Dec 9 FOMC result',
+          timing: 'Dec 9',
+          why: {
+            text: 'Revisit hedge coverage once the rate decision is in.',
+            citations: [],
+          },
+          dejaDueItemId: 'dd-dnut-fomc',
+        },
+        {
+          followUp: 'Maturity goes current',
+          timing: 'Mar 2027',
+          why: {
+            text: '12 months to the March 2028 maturity; the refinancing window opens.',
+            citations: [{ evidenceId: 'dnut-credit-facility', badge: 'Facility Schedule' }],
+          },
+          dejaDueItemId: 'dd-dnut-current',
+        },
+      ],
+      todaysCall: { move: 'Hedge floating debt ahead of FOMC', callBy: 'Mon, Nov 16' },
+    },
     bnpRoleSummary:
       'Administrative, collateral & documentation agent on 2023 facility ($300M RCF + $700M TL, +$125M 2025 upsize); issues LCs',
     engageTiming: 'Engage Immediately (Pre–Dec 8–9 FOMC)',
@@ -785,6 +832,126 @@ Sophie Laurent
 Relationship Manager · Corporate Coverage, BNP Paribas`,
     },
     linkedEvidenceIds: ['dnut-credit-facility', 'dnut-q3-8k', 'market-oct-cpi', 'dnut-crm-sep26'],
+  },
+  {
+    rank: 3,
+    clientId: 'castleton-commodities',
+    clientName: 'Castleton Commodities (CCI)',
+    tickerOrRegion: 'Global Commodity Merchant',
+    sector: 'Energy, Power, Metals & Freight Trading',
+    hq: 'Stamford, CT',
+    storyTheme: 'Commodity Story · Sharpest Oil Drop Since COVID Hits Borrowing Base',
+    card: {
+      timingBadge: 'Before Dec certificate · by Nov 30',
+      triggerTag: 'Trigger: Market + CRM',
+      privateSideTooltip:
+        'CCI’s inventory and borrowing-base data are confidential lender information. Never route this brief to BNP’s own commodity traders or research.',
+      theMove:
+        'Call before the next borrowing-base report to check collateral headroom after the oil drop, and to re-size the accordion request.',
+      whyNow: [
+        {
+          text: 'Brent fell 16% in the week to Nov 6 (the sharpest drop since COVID) and dipped below $90 on Nov 10. CCI’s borrowing base is marked to these prices.',
+          citations: [{ evidenceId: 'market-brent-drop', badge: 'Reuters / OilPrice' }],
+        },
+        {
+          text: 'In October, CCI asked about using the $1B accordion for more LC capacity, but lower cargo values may change how much it needs.',
+          citations: [{ evidenceId: 'cci-crm-oct26', badge: 'Demo CRM Note · Oct 2026' }],
+        },
+      ],
+      ask: [
+        'How does your headroom look against October’s certificate?',
+        'Is margin on your hedges creating short-term cash gaps?',
+      ],
+      bring: 'Accordion or interim redetermination · commodity & freight hedging',
+      bnpRole: {
+        text: 'Global coordinator & administrative agent on the borrowing-base facility (2018 $3.525B; 2022 $2.2B, $1B accordion)',
+        citations: [{ evidenceId: 'cci-borrowing-base', badge: 'CCI / ABF Journal' }],
+      },
+      suggestedFollowUps: [
+        {
+          followUp: 'Next borrowing-base report',
+          timing: 'Dec',
+          why: {
+            text: 'Re-check headroom on the new certificate after the oil sell-off.',
+            citations: [],
+          },
+          dejaDueItemId: 'dd-cci-cert',
+        },
+      ],
+      assumption: 'Assumes BNP remains agent on a monthly borrowing-base certificate schedule.',
+      todaysCall: { move: 'Check borrowing-base headroom after oil drop', callBy: 'Mon, Nov 30' },
+    },
+    bnpRoleSummary: 'Global coordinator & administrative agent on borrowing-base facility (2018 $3.525B & 2022 $2.2B renewals, $1B accordion)',
+    engageTiming: 'Engage Before Monthly Borrowing-Base Certificate',
+    briefHeadline:
+      'Brent fell 16% in a week and briefly broke $90. CCI’s BNP-agented borrowing base is marked to these prices. Check headroom, hedge margin and LC usage before the next borrowing-base report.',
+    publicEvidence: [
+      { type: 'text', content: 'BNP Paribas acted as global coordinator and administrative agent on CCI’s ' },
+      {
+        type: 'link',
+        content: '2018 ($3.525B) and 2022 ($2.2B, 17 banks, $1B accordion) borrowing-base facilities',
+        evidenceId: 'cci-borrowing-base',
+        sourceBadge: 'CCI / ABF Journal',
+      },
+      { type: 'text', content: ' backing merchanting letters of credit. This week, ' },
+      {
+        type: 'link',
+        content: 'Brent fell 16% in the week to Nov 6 (sharpest drop since COVID) and dipped below $90 on Nov 10',
+        evidenceId: 'market-brent-drop',
+        sourceBadge: 'Reuters / OilPrice',
+      },
+      { type: 'text', content: ' as Dated Brent slipped below futures—yet Goldman lifted its Dec target to $105 ($140 Gulf risk), creating acute two-way volatility.' },
+    ],
+    syntheticCrmContext: [
+      { type: 'text', content: 'Per your ' },
+      {
+        type: 'link',
+        content: 'Oct 2026 call note, CCI built crude and refined product inventory during the war premium and asked about using the $1B accordion for extra LC capacity',
+        evidenceId: 'cci-crm-oct26',
+        sourceBadge: 'Demo CRM Note',
+      },
+      { type: 'text', content: ' (demo assumes BNP remains agent on a monthly borrowing-base certificate schedule).' },
+    ],
+    whyNowBullets: [
+      [
+        { type: 'text', content: 'A borrowing base lends against inventory and receivables at market value: a 16% Brent drop directly shrinks collateral headroom, even as smaller cargoes require smaller LCs.' },
+      ],
+      [
+        { type: 'text', content: 'Hedged inventory means futures gains and physical losses settle on different timelines, creating short-term liquidity swings while tanker freight rates stayed elevated.' },
+      ],
+    ],
+    keyPointsToHit: [
+      'Mark-to-market borrowing-base availability vs. October’s certificate following the 16% crude sell-off.',
+      'Re-sizing LC accordion demand versus lower nominal cargo values and futures/physical margin timing mismatches.',
+      'Two-way crude & elevated tanker freight hedging if Iran diplomacy reverses back toward $105+.',
+    ],
+    productsAndSpecialists: 'Borrowing-base facility (accordion, interim redetermination) · Letters of credit · Commodity & freight hedging',
+    recommendedTeam: [
+      { name: 'Henrik Lindqvist', role: 'MD, Commodity Trade Finance', email: 'henrik.lindqvist@bnpparibas.com' },
+      { name: 'David K. Chen', role: 'Executive Director, Commodity Derivatives', email: 'david.chen@bnpparibas.com' },
+    ],
+    informationBarrierNotice:
+      'Private-Side Barrier: CCI’s inventory and borrowing-base data are confidential lender information. Never route this brief to BNP’s own commodity traders or research.',
+    keyContact: {
+      name: 'Global Treasury & Trade Operations',
+      role: 'CCI Treasury',
+      email: 'treasury@cci-demo.com',
+    },
+    draftEmail: {
+      subject: 'CCI Borrowing-Base Headroom & LC Capacity Check — Following 16% Brent Move',
+      body: `Hi Team,
+
+Following the sharp 16% pullback in Brent over the past week and Tuesday's dip below $90/bbl—while tanker freight remains elevated—we wanted to touch base ahead of your next borrowing-base certificate.
+
+When we spoke in October about your inventory build and potential use of the $1B accordion for additional LC capacity, pricing dynamics looked quite different. Henrik Lindqvist (Commodity Trade Finance) and David Chen (Commodity Derivatives) would be glad to run through updated mark-to-market availability, hedge-margin liquidity timing, and two-way upside protection scenarios.
+
+Do you have 20 minutes this week to review ahead of month-end reporting?
+
+Best regards,
+Sophie Laurent
+BNP Paribas`,
+    },
+    linkedEvidenceIds: ['cci-borrowing-base', 'market-brent-drop', 'cci-crm-oct26'],
   },
 ];
 

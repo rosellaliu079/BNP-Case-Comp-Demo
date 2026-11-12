@@ -75,6 +75,13 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
       const Icon = getSourceIcon(seg.evidenceId);
       const record = seg.evidenceId ? EVIDENCE_RECORDS[seg.evidenceId] : undefined;
       const isSelected = seg.evidenceId && activeEvidenceId === seg.evidenceId;
+      const linkTone = dark
+        ? isSelected
+          ? 'bg-white/15 text-white decoration-white'
+          : 'text-blue-100 decoration-blue-200/70 hover:bg-white/10 hover:decoration-white'
+        : isSelected
+          ? 'bg-[#00915A]/15 text-[#007348] decoration-[#007348]'
+          : 'text-[#007348] decoration-[#00915A]/45 hover:bg-[#EDF7F2] hover:decoration-[#00915A]';
 
       return (
         <span key={idx} className="inline">
@@ -82,17 +89,10 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
             type="button"
             onClick={() => seg.evidenceId && onOpenEvidence(seg.evidenceId)}
             title={`Inspect source: ${seg.sourceBadge || 'Evidence Record'}`}
-            className={`inline text-left font-medium underline underline-offset-3 decoration-[1.5px] transition-colors cursor-pointer rounded px-0.5 -mx-0.5 ${dark
-                ? isSelected
-                  ? 'bg-white/15 text-white decoration-white'
-                  : 'text-emerald-100 decoration-white/45 hover:bg-white/10 hover:decoration-white'
-                : isSelected
-                  ? 'bg-[#00915A]/15 text-[#007348] decoration-[#007348]'
-                  : 'text-[#007348] decoration-[#00915A]/45 hover:bg-[#EDF7F2] hover:decoration-[#00915A]'
-              }`}
+            className={`inline text-left font-medium underline underline-offset-3 decoration-[1.5px] transition-colors cursor-pointer rounded px-0.5 -mx-0.5 focus-visible:outline-none focus-visible:ring-2 ${dark ? 'focus-visible:ring-white' : 'focus-visible:ring-[#007348]'} ${linkTone}`}
           >
             <span>{seg.content}</span>
-            <span className={`inline-flex items-center gap-0.5 text-[11px] font-mono no-underline align-baseline ml-1 ${dark ? 'text-emerald-200' : 'text-[#00915A]'}`}>
+            <span className={`inline-flex items-center gap-0.5 text-[11px] font-mono no-underline align-baseline ml-1 ${dark ? 'text-blue-200' : 'text-[#00915A]'}`}>
               <Icon className="w-3 h-3 inline shrink-0 translate-y-[1px]" />
               <span>[{seg.sourceBadge}]</span>
             </span>
@@ -103,7 +103,7 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
               target="_blank"
               rel="noopener noreferrer"
               title={record.externalUrlLabel || 'Open real external source in new tab'}
-              className="inline-flex items-center text-[#007348] hover:text-[#005E3A] ml-0.5 align-baseline"
+              className={`inline-flex items-center ml-0.5 align-baseline ${dark ? 'text-blue-100 hover:text-white' : 'text-[#007348] hover:text-[#005E3A]'}`}
             >
               <ExternalLink className="w-3 h-3 inline translate-y-[1px]" />
             </a>
@@ -114,10 +114,10 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
   };
 
   return (
-    <div className="max-w-[920px] mx-auto bg-white border border-gray-200 rounded-md shadow-sm overflow-hidden">
+    <div className="max-w-[840px] mx-auto bg-white border border-gray-200 rounded-md overflow-hidden">
       {/* Outlook Email Header Inside Reading Pane */}
-      <div className="px-5 sm:px-6 py-3 border-b border-gray-200 bg-[#F8FAF9]">
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 mb-2">
+      <div className="px-6 py-4 border-b border-gray-200 bg-white">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
           <h1 className="text-lg font-semibold text-gray-900">
             (INTERNAL): This Week in a Changing World
           </h1>
@@ -145,7 +145,7 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
       </div>
 
       {/* BNP Paribas Rendez-Vous Institutional Masthead */}
-      <div className="bg-[#007348] text-white px-5 sm:px-7 py-5">
+      <div className="bg-[#007348] text-white px-7 py-5">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-white/15 pb-4 mb-4">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded bg-[#00915A] border border-white/25 flex items-center justify-center shrink-0">
@@ -157,6 +157,9 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
               <div className="text-[11px] font-medium tracking-wider uppercase text-emerald-100">
                 BNP Paribas · Rendez-Vous Client Intelligence
               </div>
+              <div className="text-lg font-semibold tracking-tight text-white">
+                (INTERNAL): This Week in a Changing World
+              </div>
             </div>
           </div>
 
@@ -166,20 +169,20 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-0 text-xs">
-          <div className="sm:pr-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+          <div>
             <div className="text-emerald-100/80">Live Market Triggers Ingested</div>
             <div className="text-sm font-semibold text-white tabular-nums mt-0.5">
               11 Events → 3 Client Cards
             </div>
           </div>
-          <div className="sm:px-4 sm:border-l sm:border-white/20">
+          <div>
             <div className="text-emerald-100/80">Coverage Themes</div>
             <div className="text-sm font-medium text-white mt-0.5">
               FX/Trade (Ternium) · Oil (CCI) · Rates (DNUT)
             </div>
           </div>
-          <div className="sm:pl-4 sm:border-l sm:border-white/20">
+          <div>
             <div className="text-emerald-100/80">Time-Triggered Queue</div>
             <div className="text-sm font-semibold text-white tabular-nums mt-0.5">
               {dejaDueItems.length} Déjà Due Follow-Ons Tracked
@@ -189,7 +192,7 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
       </div>
 
       {/* Priority Quick-Jump Index */}
-      <div className="px-5 sm:px-7 py-4 bg-[#F8FAF9] border-b border-gray-200">
+      <div className="px-7 py-4 bg-[#F8FAF9] border-b border-gray-200">
         <div className="text-xs text-gray-600 mb-3">
           Click any <span className="text-[#007348] font-medium underline">underlined citation</span> to inspect its summary card, or click the <ExternalLink className="w-3 h-3 inline text-[#007348]" /> icon beside public filings and market triggers to pop out directly to the real external source.
         </div>
@@ -199,7 +202,7 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
             <a
               key={client.clientId}
               href={`#client-brief-${client.clientId}`}
-              className="group block p-3.5 bg-white border border-gray-200 border-l-2 border-l-[#00915A] rounded-r hover:border-[#00915A] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348]"
+              className="group block p-3 bg-white border border-gray-200 rounded hover:border-[#00915A] transition-colors"
             >
               <div className="flex items-center justify-between text-[11px] text-gray-500 tabular-nums">
                 <span className="font-semibold text-[#007348]">Client 0{client.rank}</span>
@@ -217,19 +220,19 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
       </div>
 
       {/* Prioritized Client Briefs */}
-      <div className="divide-y divide-gray-200">
+      <div className="bg-[#F6F8F7] px-4 sm:px-6 py-5 space-y-4">
         {WEEKLY_CLIENT_BRIEFS.map((client) => (
           <section
             key={client.clientId}
             id={`client-brief-${client.clientId}`}
-            className="px-5 sm:px-7 py-6 sm:py-7"
+            className="px-5 sm:px-6 py-5 bg-white border border-gray-200 rounded-md shadow-sm"
           >
             {/* Workflow Trigger: Changing World (market event) or Déjà Due (time-triggered) */}
             <div className="flex flex-wrap items-start gap-x-2 gap-y-1 mb-3 text-xs">
               <span
                 className={`inline-flex items-center gap-1 px-2 py-0.5 rounded font-semibold shrink-0 ${client.workflowTag === 'Déjà Due'
-                    ? 'bg-[#123B30] text-white'
-                    : 'bg-[#EDF7F2] text-[#007348] border border-[#00915A]/30'
+                  ? 'bg-[#123B30] text-white'
+                  : 'bg-[#EDF7F2] text-[#007348] border border-[#00915A]/30'
                   }`}
               >
                 {client.workflowTag === 'Déjà Due' ? (
@@ -246,8 +249,8 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
             <div className="flex flex-wrap items-start justify-between gap-4 mb-3">
               <div>
                 <div className="flex flex-wrap items-center gap-2 text-xs text-gray-500 mb-1">
-                  <span className="inline-flex min-w-6 h-6 items-center justify-center rounded bg-[#EDF7F2] font-mono font-semibold text-[#007348]">
-                    0{client.rank}
+                  <span className="font-mono font-semibold text-[#007348]">
+                    0{client.rank}.
                   </span>
                   <span>{client.storyTheme}</span>
                   <span aria-hidden="true">·</span>
@@ -256,14 +259,14 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
                 <button
                   type="button"
                   onClick={() => onOpenClientCrm(client.clientId)}
-                  className="text-xl font-semibold text-gray-950 hover:text-[#007348] transition-colors text-left flex items-center gap-1.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348] rounded-sm"
+                  className="text-lg font-semibold text-gray-900 hover:text-[#007348] transition-colors text-left flex items-center gap-1.5 cursor-pointer"
                 >
                   <span>{client.clientName}</span>
                   <ArrowUpRight className="w-4 h-4 text-gray-400" />
                 </button>
               </div>
 
-              <div className="text-left sm:text-right sm:pl-4 sm:border-l sm:border-gray-200">
+              <div className="text-left sm:text-right">
                 <div className="text-xs text-gray-500">Recommended Timing</div>
                 <div className="text-xs font-semibold text-[#007348] mt-0.5 flex items-center sm:justify-end gap-1">
                   <Calendar className="w-3.5 h-3.5" />
@@ -272,93 +275,116 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
               </div>
             </div>
 
-            {/* Brief Headline */}
-            <div className="bg-[#F3F8F5] border border-[#D5E8DE] border-l-[3px] border-l-[#00915A] rounded-r px-4 py-3.5 mb-5">
+            {/* The Move */}
+            <div className="bg-[#EDF7F2] border border-[#C9E2D4] border-l-4 border-l-[#007348] rounded-md px-4 py-3.5 mb-4">
               <div className="text-[11px] font-semibold uppercase tracking-wide text-[#007348] mb-1">
-                Brief Headline · BNP Role: {client.bnpRoleSummary}
+                The Move
               </div>
-              <p className="text-sm font-medium text-gray-900 leading-snug">
-                {client.briefHeadline}
+              <p className="text-[15px] font-semibold text-gray-950 leading-snug">
+                {client.card.theMove}
+              </p>
+              {client.card.angle && (
+                <p className="mt-2 pt-2 border-t border-[#C9E2D4] text-xs leading-relaxed text-gray-700">
+                  <span className="font-semibold text-gray-900">Angle:</span> {client.card.angle}
+                </p>
+              )}
+              <p className="mt-2 text-[11px] text-gray-600">
+                <span className="font-semibold text-gray-800">BNP role:</span> {client.bnpRoleSummary}
               </p>
             </div>
 
-            {/* Public Evidence vs. Demo CRM Context */}
-            <div className="space-y-4 text-[13px] leading-relaxed text-gray-700">
-              <div className="border-l-2 border-[#D5E8DE] pl-4">
-                <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-600 mb-1.5">
+            <div className="space-y-3 text-[13px] leading-relaxed text-gray-700">
+              {/* Public evidence */}
+              <div className="rounded-md border border-gray-200 bg-white overflow-hidden">
+                <div className="px-3.5 py-2 bg-gray-50 border-b border-gray-200 text-[11px] font-semibold uppercase tracking-wide text-gray-600">
                   Public Evidence (BNP Relationship, Filings & Market Triggers)
                 </div>
-                <p>{renderSegments(client.publicEvidence)}</p>
+                <p className="px-3.5 py-3">{renderSegments(client.publicEvidence)}</p>
               </div>
 
-              <div className="bg-[#123B30] border border-[#0B3027] rounded-md px-4 py-3.5 text-white shadow-sm">
-                <div className="text-[11px] font-semibold uppercase tracking-wide text-emerald-200 mb-1.5">
-                  Demo CRM Context (Internal CRM Note)
-                </div>
-                <p className="text-emerald-50">{renderSegments(client.syntheticCrmContext, true)}</p>
-              </div>
-
-              <div>
-                <div className="text-xs font-semibold text-gray-900 mb-1.5">
+              {/* Why now */}
+              <div className="rounded-md border border-gray-200 bg-[#FAFBFA] px-3.5 py-3">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-600 mb-2">
                   Why Now
                 </div>
-                <ul className="space-y-1.5 list-disc pl-5">
+                <ul className="space-y-2">
                   {client.whyNowBullets.map((bullet, bIdx) => (
-                    <li key={bIdx}>{renderSegments(bullet)}</li>
+                    <li key={bIdx} className="flex items-start gap-2">
+                      <span className="mt-[3px] h-1.5 w-1.5 rounded-full bg-[#00915A] shrink-0" aria-hidden="true" />
+                      <span>{renderSegments(bullet)}</span>
+                    </li>
                   ))}
                 </ul>
               </div>
 
-              <div>
-                <div className="text-xs font-semibold text-gray-900 mb-1.5">
+              {/* Key points and team */}
+              <div className="rounded-md border border-gray-200 bg-white overflow-hidden">
+                <div className="px-3.5 py-2 bg-gray-50 border-b border-gray-200 text-[11px] font-semibold uppercase tracking-wide text-gray-600">
                   Key Points to Hit
                 </div>
-                <ul className="space-y-1 list-disc pl-5 text-gray-800">
-                  {client.keyPointsToHit.map((point, pIdx) => (
-                    <li key={pIdx}>{point}</li>
-                  ))}
-                </ul>
-
-                <div className="mt-3 pt-2.5 border-t border-gray-200 space-y-2 text-xs">
-                  <div>
-                    <span className="font-semibold text-gray-900">Relevant Solutions: </span>
-                    <span className="text-gray-700">{client.productsAndSpecialists}</span>
-                  </div>
-                  <div className="flex flex-wrap items-center gap-1.5 text-gray-700">
-                    <Users className="w-3.5 h-3.5 text-[#007348] shrink-0" />
-                    <span className="font-semibold text-gray-900">Recommended BNP Team:</span>
-                    {client.recommendedTeam.map((member, mIdx) => (
-                      <React.Fragment key={member.name}>
-                        <span>
-                          <button
-                            type="button"
-                            onClick={() => onDraftSpecialistEmail(member)}
-                            title={`Email ${member.name} (${member.email})`}
-                            className="font-medium text-[#007348] underline underline-offset-2 decoration-[#00915A]/45 hover:decoration-[#007348] hover:bg-[#EDF7F2] rounded-sm px-0.5 -mx-0.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348]"
-                          >
-                            {member.name}
-                          </button>{' '}
-                          <span className="text-gray-500">({member.role})</span>
-                        </span>
-                        {mIdx < client.recommendedTeam.length - 1 && (
-                          <span className="text-gray-300">·</span>
-                        )}
-                      </React.Fragment>
+                <div className="px-3.5 py-3">
+                  <ul className="space-y-1.5 list-disc pl-5 text-gray-800">
+                    {client.keyPointsToHit.map((point, pIdx) => (
+                      <li key={pIdx}>{point}</li>
                     ))}
+                  </ul>
+
+                  <div className="mt-3 pt-3 border-t border-gray-200 grid grid-cols-1 gap-3 text-xs">
+                    <div>
+                      <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-500 mb-1">Relevant Solutions</div>
+                      <div className="text-gray-700">{client.productsAndSpecialists}</div>
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                        <Users className="w-3.5 h-3.5 text-[#007348] shrink-0" />
+                        Recommended BNP Team
+                      </div>
+                      <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-gray-700">
+                        {client.recommendedTeam.map((member, mIdx) => (
+                          <React.Fragment key={member.name}>
+                            <span>
+                              <button
+                                type="button"
+                                onClick={() => onDraftSpecialistEmail(member)}
+                                title={`Email ${member.name} (${member.email})`}
+                                className="font-medium text-[#007348] underline underline-offset-2 decoration-[#00915A]/45 hover:decoration-[#007348] hover:bg-[#EDF7F2] rounded-sm px-0.5 -mx-0.5 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348]"
+                              >
+                                {member.name}
+                              </button>{' '}
+                              <span className="text-gray-500">({member.role})</span>
+                            </span>
+                            {mIdx < client.recommendedTeam.length - 1 && (
+                              <span className="text-gray-300">·</span>
+                            )}
+                          </React.Fragment>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
 
+              {/* Coverage notes */}
               {(client.informationBarrierNotice || client.coverageNote) && (
                 <div className="bg-amber-50/70 border border-amber-200/80 rounded px-3.5 py-2.5 text-xs text-amber-950 flex items-start gap-2">
                   <Lock className="w-3.5 h-3.5 text-amber-700 shrink-0 mt-0.5" />
                   <span>{client.informationBarrierNotice || client.coverageNote}</span>
                 </div>
               )}
+
+              {/* Demo CRM context stays last; source links remain interactive. */}
+              <div className="rounded-md border border-[#1F3B52] bg-[#20364B] px-3.5 py-3 text-white">
+                <div className="text-[11px] font-semibold uppercase tracking-wide text-blue-200 mb-1.5">
+                  Demo CRM Note · Internal
+                </div>
+                <p className="text-[13px] leading-relaxed text-gray-100">
+                  {renderSegments(client.syntheticCrmContext, true)}
+                </p>
+              </div>
             </div>
 
             {/* Sources & Actions */}
-            <div className="mt-5 pt-4 border-t border-gray-200 flex flex-wrap items-center justify-between gap-3">
+            <div className="mt-4 pt-3 border-t border-gray-100 flex flex-wrap items-center justify-between gap-3">
               <div className="flex flex-wrap items-center gap-1.5 text-xs">
                 <span className="text-gray-500 mr-1">Sources:</span>
                 {client.linkedEvidenceIds.map((evId) => {
@@ -428,7 +454,7 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
       </div>
 
       {/* Relevance Over Volume: Suppressed Signals & Live Trigger Feed */}
-      <section className="px-5 sm:px-7 py-4 bg-white border-t border-gray-200">
+      <section className="px-7 py-4 bg-white border-t border-gray-200">
         <button
           type="button"
           onClick={() => setAuditOpen((open) => !open)}
@@ -442,8 +468,7 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
               Signal Filtering Audit: Relevance Over Volume
             </span>
           </span>
-          <span className="flex items-center gap-1.5 text-xs text-gray-500">
-            <span className="tabular-nums">11 Triggers → 3 Cards · 8 Filtered</span>
+          <span className="flex items-center gap-1.5 text-xs">
             <span className="text-[#007348] font-medium">{auditOpen ? 'Hide' : 'View'}</span>
             <ChevronDown
               className={`w-3.5 h-3.5 text-[#007348] transition-transform ${auditOpen ? 'rotate-180' : ''}`}
@@ -459,8 +484,8 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
               type="button"
               onClick={() => setAuditTab('suppressed')}
               className={`px-3 py-1 rounded transition-colors cursor-pointer ${auditTab === 'suppressed'
-                  ? 'bg-white text-gray-900 font-medium shadow-2xs'
-                  : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-gray-900 font-medium shadow-2xs'
+                : 'text-gray-600 hover:text-gray-900'
                 }`}
             >
               Suppressed This Week (8)
@@ -469,8 +494,8 @@ export const NewsletterView: React.FC<NewsletterViewProps> = ({
               type="button"
               onClick={() => setAuditTab('feed')}
               className={`px-3 py-1 rounded transition-colors cursor-pointer ${auditTab === 'feed'
-                  ? 'bg-white text-gray-900 font-medium shadow-2xs'
-                  : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-white text-gray-900 font-medium shadow-2xs'
+                : 'text-gray-600 hover:text-gray-900'
                 }`}
             >
               Ingested Trigger Feed (11)

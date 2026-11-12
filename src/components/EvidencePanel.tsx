@@ -67,27 +67,19 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
   })();
 
   const TypeIcon = typeMeta.icon;
-  const isCrmEvidence = record.type === 'crm-facility' || record.type === 'meeting-note';
-  const headerTone = isCrmEvidence
-    ? 'bg-[#123B30] border-[#0B3027] text-white'
-    : 'bg-[#F8FAF9] border-gray-200 text-gray-900';
-  const headerMutedTone = isCrmEvidence ? 'text-white/65' : 'text-gray-500';
-  const headerControlTone = isCrmEvidence
-    ? 'text-white/75 hover:text-white hover:bg-white/10 focus-visible:ring-white focus-visible:ring-offset-[#123B30]'
-    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-200/70 focus-visible:ring-[#007348] focus-visible:ring-offset-white';
 
   return (
     <div className="min-w-0 bg-white flex flex-col h-full border border-gray-200/90 rounded-lg shadow-2xs overflow-hidden">
       {/* Header */}
-      <div className={`px-4 py-4 border-b flex items-center justify-between gap-3 ${headerTone}`}>
+      <div className="px-4 py-4 bg-[#123B30] border-b border-[#0B3027] flex items-center justify-between gap-3">
         <div className="min-w-0">
-          <div className="flex items-center gap-2 text-xs font-semibold">
-            <span className={`w-7 h-7 shrink-0 inline-flex items-center justify-center rounded ${isCrmEvidence ? 'bg-white/10' : 'bg-[#007348]/10 text-[#007348]'}`}>
+          <div className="flex items-center gap-2 text-xs font-semibold text-white">
+            <span className="w-7 h-7 shrink-0 inline-flex items-center justify-center rounded bg-white/10">
               <TypeIcon className="w-4 h-4" />
             </span>
             <span className="truncate">{typeMeta.label}</span>
           </div>
-          <div className={`text-[11px] font-mono truncate mt-2 pl-9 ${headerMutedTone}`}>
+          <div className="text-[11px] font-mono text-white/65 truncate mt-2 pl-9">
             {record.sourceLabel}
           </div>
         </div>
@@ -98,7 +90,7 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
             onClick={() => onSelectEvidence(prevId)}
             title="Previous linked record"
             aria-label="Previous linked record"
-            className={`min-w-9 min-h-9 inline-flex items-center justify-center rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${headerControlTone}`}
+            className="min-w-9 min-h-9 inline-flex items-center justify-center text-white/75 hover:text-white hover:bg-white/10 rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#123B30]"
           >
             <ArrowLeft className="w-4 h-4" />
           </button>
@@ -107,7 +99,7 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
             onClick={() => onSelectEvidence(nextId)}
             title="Next linked record"
             aria-label="Next linked record"
-            className={`min-w-9 min-h-9 inline-flex items-center justify-center rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${headerControlTone}`}
+            className="min-w-9 min-h-9 inline-flex items-center justify-center text-white/75 hover:text-white hover:bg-white/10 rounded transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#123B30]"
           >
             <ArrowRight className="w-4 h-4" />
           </button>
@@ -116,7 +108,7 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
             onClick={onClose}
             title="Close source view"
             aria-label="Close source view"
-            className={`min-w-9 min-h-9 inline-flex items-center justify-center rounded transition-colors cursor-pointer ml-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${headerControlTone}`}
+            className="min-w-9 min-h-9 inline-flex items-center justify-center text-white/75 hover:text-white hover:bg-white/10 rounded transition-colors cursor-pointer ml-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-[#123B30]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -244,16 +236,16 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
                     <div className="flex items-center gap-2 min-w-0">
                       <Calendar
                         className={`w-3.5 h-3.5 shrink-0 ${step.status === 'current'
-                            ? 'text-[#00915A]'
-                            : step.status === 'warning'
-                              ? 'text-amber-600'
-                              : 'text-gray-400'
+                          ? 'text-[#00915A]'
+                          : step.status === 'warning'
+                            ? 'text-amber-600'
+                            : 'text-gray-400'
                           }`}
                       />
                       <span
                         className={`truncate ${step.status === 'current'
-                            ? 'font-semibold text-[#007348]'
-                            : 'text-gray-800'
+                          ? 'font-semibold text-[#007348]'
+                          : 'text-gray-800'
                           }`}
                       >
                         {step.label}
@@ -390,8 +382,8 @@ export const EvidencePanel: React.FC<EvidencePanelProps> = ({
                   onClick={() => onSelectEvidence(id)}
                   aria-pressed={id === record.id}
                   className={`max-w-full px-2.5 py-1.5 text-[11px] leading-snug rounded border transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#007348] focus-visible:ring-offset-2 ${id === record.id
-                      ? 'bg-[#00915A] text-white border-[#00915A]'
-                      : 'bg-white text-gray-700 border-gray-200 hover:border-[#00915A] hover:bg-[#F8FAF9]'
+                    ? 'bg-[#00915A] text-white border-[#00915A]'
+                    : 'bg-white text-gray-700 border-gray-200 hover:border-[#00915A] hover:bg-[#F8FAF9]'
                     }`}
                 >
                   {item.sourceLabel}
