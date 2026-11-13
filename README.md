@@ -8,10 +8,14 @@ We were prompted to create a solution to solve the issue that Relationship Manag
 🔗 **Live demo:** (https://bnp-case-comp-demo.vercel.app/)
 
 ## Run it Locally
+
+## Run locally
+```bash
 git clone [https://github.com/rosellaliu079/rendez-vous.git](https://github.com/rosellaliu079/BNP-Case-Comp-Demo.git)
 cd rendez-vous
 npm install
 npm run dev
+```
 
 ## What it does
 Rendez-vous sits inside the tools RMs already use (Outlook and the CRM) and delivers 3-5 items a week, built from two workflows:
