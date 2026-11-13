@@ -169,6 +169,13 @@ export const CrmBookView: React.FC<CrmBookViewProps> = ({
             </div>
           )}
 
+          {activeDossier.contextNote && (
+            <div className="bg-gray-50 border border-gray-200 rounded px-3.5 py-2.5 text-xs text-gray-700">
+              <span className="font-semibold text-gray-900">Context: </span>
+              {activeDossier.contextNote}
+            </div>
+          )}
+
           {/* Financial & Role Snapshot */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="border border-gray-200 rounded p-3">

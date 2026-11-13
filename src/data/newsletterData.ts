@@ -100,7 +100,7 @@ export interface CitedLine {
 export interface DejaDueSuggestion {
   followUp: string;
   timing: string;
-  why: CitedLine;
+  why?: CitedLine;
   /** Matching Frame 5 Déjà Due item. If it is already tracked there, page 1 shows it as set. */
   dejaDueItemId?: string;
 }
@@ -116,11 +116,11 @@ export interface BriefCard {
   angle?: string;
   whyNow: [CitedLine, CitedLine];
   ask: [string, string];
-  beforeYouCall?: string;
+  /** Yellow checklist: DNUT "Before you call", Southwest "Barrier check". */
+  checklist?: { label: 'Before you call' | 'Barrier check'; items: CitedLine[] };
   bring: string;
   bnpRole: CitedLine;
-  suggestedFollowUps: DejaDueSuggestion[];
-  assumption?: string;
+  dejaDueFollowUps: DejaDueSuggestion[];
   todaysCall: { move: string; callBy: string };
 }
 
@@ -128,19 +128,20 @@ export interface ClientBriefItem {
   rank: number;
   clientId: string;
   clientName: string;
-  tickerOrRegion: string;
-  sector: string;
   hq: string;
-  storyTheme: string;
   card: BriefCard;
-  bnpRoleSummary: string;
-  engageTiming: string;
-  briefHeadline: string;
-  publicEvidence: InlineLinkSegment[];
-  syntheticCrmContext: InlineLinkSegment[];
-  whyNowBullets: InlineLinkSegment[][];
-  keyPointsToHit: string[];
-  productsAndSpecialists: string;
+  // Legacy fields from the pre-v2 page 1 layout; no longer rendered.
+  tickerOrRegion?: string;
+  sector?: string;
+  storyTheme?: string;
+  bnpRoleSummary?: string;
+  engageTiming?: string;
+  briefHeadline?: string;
+  publicEvidence?: InlineLinkSegment[];
+  syntheticCrmContext?: InlineLinkSegment[];
+  whyNowBullets?: InlineLinkSegment[][];
+  keyPointsToHit?: string[];
+  productsAndSpecialists?: string;
   recommendedTeam: SpecialistColleague[];
   informationBarrierNotice?: string;
   coverageNote?: string;
@@ -220,6 +221,8 @@ export interface ClientDossier {
   recommendedTeam: SpecialistColleague[];
   recentEvidenceIds: string[];
   informationBarrierNotice?: string;
+  /** Grey context note on the CRM detail page only. */
+  contextNote?: string;
 }
 
 export const RM_PROFILE = {
@@ -243,7 +246,7 @@ export const EVIDENCE_RECORDS: Record<string, EvidenceRecord> = {
     date: 'Maturing March 2028',
     authorOrPublisher: 'SEC Filings (2026 DEF 14A Proxy, FY2025 10-K, 10-Q) & Credit File',
     highlightedExcerpt:
-      'BNP Paribas serves as administrative agent, collateral agent, and documentation agent, and issues letters of credit. Borrowings float at Adjusted Term SOFR + margin. At FY2025 end: $742.8M term loan and $157.5M revolver drawn (~$900M floating).',
+      'BNP Paribas serves as administrative agent, collateral agent, and documentation agent, and issues letters of credit. Borrowings float at Adjusted Term SOFR + margin. At FY2025 end: $742.8M term loan and $157.5M revolver drawn (~$900M floating at FY25 year-end).',
     informationBarrierNote:
       'PRIVATE-SIDE LENDER INFO: As agent, BNP Paribas receives private compliance certificates and covenant calculations. Visible to RM and Credit team only — never routed to public-side sales or research.',
     facilityDetails: {
@@ -280,7 +283,7 @@ export const EVIDENCE_RECORDS: Record<string, EvidenceRecord> = {
       'Q3 2026 net revenue $328.8M; FY guidance raised to $1.35–$1.40B; net leverage 5.5x; liquidity $250.5M; shares jumped ~25–30% on the day alongside Japan/Western US refranchising and a 120-shop Pakistan franchise deal.',
     filingDetails: {
       filingType: 'SEC Form 8-K (Ex. 99.1) & Market Equity Reaction',
-      sourceCitation: 'Filed Nov 5, 2026 · Market Cap ~$577M',
+      sourceCitation: 'Filed Nov 5, 2026',
       keyMetrics: [
         { label: 'Q3 2026 Net Revenue', value: '$328.8M' },
         { label: 'FY Guidance (Raised)', value: '$1.35B – $1.40B' },
@@ -352,21 +355,21 @@ export const EVIDENCE_RECORDS: Record<string, EvidenceRecord> = {
       articleParagraphs: [
         'Following a September rate hike and an October 28 FOMC hold (10–2 vote) at 3.75–4.00%, Tuesday’s hotter-than-expected October CPI print (+0.4% m/m vs +0.3% consensus) drove December 8–9 hike probabilities to ~85% on CME FedWatch.',
         'Matching Logic Applied: Trigger fires for any corporate client carrying material floating-rate SOFR debt or facing a debt refinancing within the next 18 months.',
-        'For Krispy Kreme (~$900M floating term loan and revolver), each 25 bps policy increase adds roughly $2.25M in annualized interest expense if unhedged.',
+        'For Krispy Kreme (~$900M floating term loan and revolver at FY25 year-end), each 25 bps policy increase adds roughly $2.25M in annualized interest expense if unhedged.',
       ],
     },
   },
   'ternium-green-loan': {
     id: 'ternium-green-loan',
     type: 'crm-facility',
-    sourceLabel: 'SEC / CA-CIB · $1.25B Green Loan',
+    sourceLabel: 'The Asset / Milbank · Aug 2025',
     externalUrl: 'https://www.sec.gov/edgar/browse/?CIK=0001342874',
-    externalUrlLabel: 'Open Ternium S.A. SEC EDGAR Filings (CIK 0001342874)',
+    externalUrlLabel: 'Open Ternium S.A. SEC EDGAR filings (company filings; the loan itself was reported by The Asset / Milbank)',
     clientId: 'ternium-mexico',
     clientName: 'Ternium Mexico',
     title: '$1.25B Green Loan (Aug 2025) — Pesquería Low-Carbon Steel Plant',
     date: 'Originated August 2025',
-    authorOrPublisher: 'The Asset / Crédit Agricole CIB / SEC Filing',
+    authorOrPublisher: 'The Asset / Milbank · Crédit Agricole CIB',
     highlightedExcerpt:
       'BNP Paribas acted as one of seven Joint Lead Arrangers and Bookrunners on Ternium Mexico’s $1.25B green loan (Crédit Agricole CIB as admin agent) financing the Pesquería low-carbon steel complex; slab plant due by year-end 2026.',
     facilityDetails: {
@@ -443,73 +446,93 @@ export const EVIDENCE_RECORDS: Record<string, EvidenceRecord> = {
       articleParagraphs: [
         'Banxico surprised consensus on November 5 by cutting its policy rate to 6.25%, driving the Mexican peso briefly to ~18.9 per USD—a 15-month low and roughly 10% weaker than its 16.87 peak on September 4.',
         'Earlier, on October 23, US–Mexico bilateral talks stalled over Section 232 steel and aluminum duties (remaining at 50%), with Washington pressing Mexico to mirror US steel tariffs on China.',
-        'For Ternium Mexico, each USD now buys ~10% more pesos for remaining year-end Pesquería slab-plant contractor outlays, while Banxico easing increases further peso downside risk.',
+        'For Ternium Mexico, each USD now buys ~10% more pesos for remaining year-end Pesquería slab-plant contractor outlays.',
       ],
     },
   },
-  'cci-borrowing-base': {
-    id: 'cci-borrowing-base',
+  'luv-term-loan-8k': {
+    id: 'luv-term-loan-8k',
     type: 'crm-facility',
-    sourceLabel: 'ABF Journal / CCI · $2.2B BBF',
-    externalUrl: 'https://www.cci.com/news/',
-    externalUrlLabel: 'Open Castleton Commodities (CCI) News & Facility Releases',
-    clientId: 'castleton-commodities',
-    clientName: 'Castleton Commodities (CCI)',
-    title: 'Global Borrowing-Base Facility ($2.2B Renewal + $1B Accordion, 17 Banks)',
-    date: '2018 ($3.525B) & 2022 ($2.2B) Renewals',
-    authorOrPublisher: 'ABF Journal / CCI Public Deal Records',
+    sourceLabel: 'SEC 8-K · Mar 2026',
+    externalUrl: 'https://www.sec.gov/edgar/browse/?CIK=0000092380',
+    externalUrlLabel: 'Open Southwest Airlines SEC EDGAR Filings (CIK 0000092380)',
+    clientId: 'southwest-airlines',
+    clientName: 'Southwest Airlines (LUV)',
+    title: '$500M Senior Secured Term Loan (Mar 2026, Aircraft-Secured)',
+    date: 'Signed March 11, 2026',
+    authorOrPublisher: 'SEC Form 8-K (Mar 2026)',
     highlightedExcerpt:
-      'BNP Paribas served as Global Coordinator and Administrative Agent on CCI’s 2018 ($3.525B) and 2022 ($2.2B, 17 banks, $1B accordion) borrowing-base facilities backing letters of credit and physical merchanting.',
+      'BNP Paribas is administrative and collateral agent and initial lender on Southwest’s $500M senior secured term loan, signed Mar 11, 2026, fully drawn, secured by aircraft and maturing Mar 11, 2029, with an uncommitted incremental feature of up to $500M.',
     informationBarrierNote:
-      'INFORMATION BARRIER: CCI’s inventory levels and borrowing-base facility data are confidential lender information. Never route this brief to BNP’s own commodity traders or research.',
+      'PRIVATE-SIDE LENDER INFO: As administrative and collateral agent, BNP receives private lender information (collateral and compliance reporting). Visible to RM and Credit only. Never route to public-side sales, research or BNP’s commodity traders.',
     facilityDetails: {
-      facilityCode: 'CCI-BBF-GLOBAL',
-      productType: 'Committed Borrowing-Base Facility (364-Day & 2-Year Tranches + $1B Accordion)',
-      principal: '$2,200,000,000 Base (+ $1,000,000,000 Accordion)',
-      originationDate: '2018 / 2022 Public Renewals (Demo assumes BNP remains Agent)',
-      maturityDate: '364-Day & 2-Year Revolving Tranches',
-      currentPricing: 'Marked to Physical Inventory & Receivables Borrowing Base',
-      stepUpTrigger: 'Monthly Borrowing-Base Certificate Redetermination',
-      covenantLeverage: 'Availability Linked Directly to Brent / Commodity Mark-to-Market',
-      takeoutWindow: 'Interim Borrowing-Base Headroom, Hedge Margin & LC Capacity Review',
+      facilityCode: 'LUV-2026-TL',
+      productType: 'Senior Secured Term Loan (Aircraft-Secured) + Uncommitted Incremental Feature up to $500M',
+      principal: '$500,000,000 (Fully Drawn)',
+      originationDate: 'March 11, 2026',
+      maturityDate: 'March 11, 2029',
+      currentPricing: 'Not in demo data',
+      stepUpTrigger: 'Not in demo data',
+      covenantLeverage: 'Not in demo data',
+      takeoutWindow: 'Uncommitted incremental feature of up to $500M',
       timelineSteps: [
-        { date: '2018 & 2022', label: 'BNP Global Coordinator & Admin Agent on $3.525B / $2.2B BBF', status: 'completed' },
-        { date: 'Nov 03, 2026', label: 'Goldman Lifts Dec Brent Target to $105 ($140 Risk)', status: 'upcoming' },
-        { date: 'Nov 06–10, 2026', label: 'Brent Drops 16% WoW, Briefly <$90 (Current)', status: 'current' },
-        { date: 'Nov 30, 2026', label: 'Monthly Borrowing-Base Certificate (Engage Before)', status: 'warning' },
-        { date: 'Dec 31, 2026', label: 'Déjà Due: Next Borrowing-Base Report Check', status: 'upcoming' },
+        { date: '2025', label: 'Fuel Hedging Program Discontinued (SEC 10-Q)', status: 'completed' },
+        { date: 'Mar 11, 2026', label: '$500M Term Loan Signed (BNP Admin & Collateral Agent, Initial Lender)', status: 'completed' },
+        { date: 'Nov 6–10, 2026', label: 'Brent −16% WoW; Trades Near $90 (Current)', status: 'current' },
+        { date: 'late Jan 2027', label: 'Déjà Due: Q4 Results & 2027 Fuel Outlook', status: 'upcoming' },
+        { date: 'Mar 11, 2029', label: 'Term Loan Maturity', status: 'upcoming' },
       ],
     },
   },
-  'cci-crm-oct26': {
-    id: 'cci-crm-oct26',
+  'luv-10q-fuel': {
+    id: 'luv-10q-fuel',
+    type: 'public-filing',
+    sourceLabel: 'SEC 10-Q · Q3 2026',
+    externalUrl: 'https://www.sec.gov/edgar/browse/?CIK=0000092380',
+    externalUrlLabel: 'Open Southwest Airlines SEC EDGAR Filings (CIK 0000092380)',
+    clientId: 'southwest-airlines',
+    clientName: 'Southwest Airlines (LUV)',
+    title: 'Fuel Hedging Discontinued in 2025; Fully Exposed to Fuel Prices',
+    date: 'Q3 2026 10-Q (sensitivity from Q1 2026 10-Q)',
+    authorOrPublisher: 'SEC Form 10-Q',
+    highlightedExcerpt:
+      'Southwest discontinued its fuel hedging program in 2025 and is fully exposed to fuel prices. A 1¢/gallon change in jet fuel moved quarterly fuel expense by about $5.6M (company estimate for Q2 2026).',
+    filingDetails: {
+      filingType: 'SEC Form 10-Q',
+      sourceCitation: 'SEC 10-Q · Q3 2026 (hedging status) · SEC 10-Q · Q1 2026 (Q2 2026 fuel sensitivity estimate)',
+      keyMetrics: [
+        { label: 'Fuel Hedging Program', value: 'Discontinued in 2025' },
+        { label: 'Fuel Price Exposure', value: 'Fully exposed' },
+        { label: 'Fuel Sensitivity (Q2 2026 est.)', value: '~$5.6M per 1¢/gal per quarter' },
+      ],
+      excerpts: [
+        'Southwest discontinued its fuel hedging program in 2025 and is fully exposed to fuel prices. (SEC 10-Q · Q3 2026)',
+        'A 1¢/gallon change in jet fuel moved quarterly fuel expense by about $5.6M (company estimate for Q2 2026). (SEC 10-Q · Q1 2026)',
+      ],
+    },
+  },
+  'luv-crm-oct26': {
+    id: 'luv-crm-oct26',
     type: 'meeting-note',
     isSyntheticCrm: true,
-    sourceLabel: 'Demo CRM Note · Oct 2026 Call',
-    clientId: 'castleton-commodities',
-    clientName: 'Castleton Commodities (CCI)',
-    title: 'Inventory Build & Accordion LC Capacity Inquiry',
+    sourceLabel: 'Demo CRM Note · Oct 2026',
+    clientId: 'southwest-airlines',
+    clientName: 'Southwest Airlines (LUV)',
+    title: 'Treasury Call — Fuel Hedging Stance & Incremental Term-Loan Feature',
     date: 'October 2026 (Demo CRM Context)',
     authorOrPublisher: 'Logged by Coverage RM · Internal CRM Only',
     highlightedExcerpt:
-      '"CCI built crude and refined product inventory during the war-risk premium and asked about tapping the $1B accordion for extra letter-of-credit capacity."',
-    informationBarrierNote:
-      'INTERNAL CRM RECORD: Synthetic CRM note; the latest facility renewal is non-public and the demo assumes BNP remains administrative agent with monthly borrowing-base certificates.',
+      '"CFO said the board would revisit fuel hedging if prices come off the highs. Treasury also flagged the $500M incremental term-loan feature for 2027 aircraft deliveries."',
+    informationBarrierNote: 'INTERNAL CRM RECORD: Synthetic CRM note created for prototype demonstration.',
     meetingDetails: {
-      attendees: [
-        'Global Treasury & Trade Operations (CCI)',
-        'Sophie Laurent (RM, BNP Paribas)',
-      ],
-      location: 'Stamford / New York Coverage Call (Internal CRM)',
-      duration: '30 mins',
+      attendees: ['Southwest CFO', 'Southwest Treasury', 'Sophie Laurent (RM, BNP Paribas)'],
+      location: 'Not in demo data',
+      duration: 'Not in demo data',
       fullNotes: [
-        'During October’s war-risk oil rally, CCI expanded physical crude and refined product inventories and inquired whether the $1B accordion could be activated to support higher nominal LC values.',
-        'With Brent dropping 16% in one week and dipping below $90 on Nov 10, collateral value on that inventory has fallen while tanker freight costs remain elevated.',
+        'CFO said the board would revisit fuel hedging if prices come off the highs.',
+        'Treasury also flagged the $500M incremental term-loan feature for 2027 aircraft deliveries.',
       ],
-      actionItems: [
-        'Compare current mark-to-market borrowing-base availability vs. October’s certificate with Henrik Lindqvist.',
-        'Assess liquidity impact of futures hedge gains vs. physical inventory losses and revisit LC accordion need.',
-      ],
+      actionItems: ['Not in demo data'],
     },
   },
   'market-brent-drop': {
@@ -518,25 +541,22 @@ export const EVIDENCE_RECORDS: Record<string, EvidenceRecord> = {
     sourceLabel: 'Reuters / OilPrice · Nov 6–10',
     externalUrl: 'https://oilprice.com/Energy/Crude-Oil/',
     externalUrlLabel: 'Open OilPrice Brent Crude Market Coverage',
-    clientId: 'castleton-commodities',
-    title: 'Brent Plunges 16% in Sharpest Weekly Drop Since COVID, Briefly Breaks $90',
+    clientId: 'southwest-airlines',
+    title: 'Brent Falls 16% in Steepest Weekly Drop Since the Start of COVID, Trades Near $90',
     date: 'November 6–10, 2026',
     authorOrPublisher: 'Nation Thailand / Reuters, OilPrice',
     highlightedExcerpt:
-      'Brent lost 16% in the week to Nov 6 (sharpest drop since COVID) and dipped below $90 on Nov 10 on Iran diplomacy; Dated Brent slipped below futures. Goldman warned of $105–$140 rebound risk if Gulf supply impairs.',
+      'Brent fell 16% in the week to Nov 6, its steepest weekly drop since the start of COVID, and traded near $90 on Nov 10 on Iran diplomacy.',
     marketDetails: {
       publication: 'Reuters / Nation Thailand / OilPrice',
-      tickerOrTopic: 'Brent Crude, Dated Brent Spread & Tanker Freight',
+      tickerOrTopic: 'Brent Crude',
       metrics: [
-        { label: 'Weekly Brent Move (to Nov 6)', value: '-16.0%', change: 'Sharpest Since COVID', positive: false },
-        { label: 'Nov 10 Intraday Dip', value: '<$90 / bbl', change: 'Iran Diplomacy', positive: false },
-        { label: 'Physical Market Signal', value: 'Dated < Futures', change: 'Contango Weakness', positive: false },
-        { label: 'Goldman Upside Scenario', value: '$105 – $140', change: 'Two-Way Risk', positive: true },
+        { label: 'Weekly Brent Move (to Nov 6)', value: '-16.0%', change: 'Steepest Since Start of COVID', positive: false },
+        { label: 'Nov 10 Level', value: '~$90 / bbl', change: 'Traded Near $90', positive: false },
       ],
       articleParagraphs: [
-        'Brent crude tumbled 16% in the week ending November 6 and briefly breached $90/bbl on November 10 following renewed Iran diplomatic signals, pushing Dated Brent below futures in a clear indicator of near-term physical softness.',
-        'Yet two-way tail risk remains severe: on November 3, Goldman Sachs raised its December Brent forecast to $105 and flagged $140/bbl risk if Gulf output stays impaired, while tanker freight rates stayed stubbornly elevated.',
-        'For borrowing-base commodity merchants like CCI, sudden downward price shocks compress collateral headroom while timing mismatches between futures margin settlements and physical sales create sharp liquidity swings.',
+        'Brent crude fell 16% in the week ending November 6, its steepest weekly drop since the start of COVID, and traded near $90/bbl on November 10 following renewed Iran diplomatic signals.',
+        'Matching Logic Applied: Oil sell-off × unhedged fuel exposure.',
       ],
     },
   },
@@ -573,10 +593,10 @@ export const WEEKLY_CLIENT_BRIEFS: ClientBriefItem[] = [
       ],
       bring: 'MXN forwards or collars · import trade finance',
       bnpRole: {
-        text: 'Joint lead arranger & bookrunner on the $1.25B green loan (Aug 2025)',
-        citations: [{ evidenceId: 'ternium-green-loan', badge: 'SEC / The Asset' }],
+        text: 'Joint lead arranger & bookrunner on the $1.25B green loan (Aug 2025), one of seven banks; Crédit Agricole CIB is agent.',
+        citations: [{ evidenceId: 'ternium-green-loan', badge: 'The Asset / Milbank · Aug 2025' }],
       },
-      suggestedFollowUps: [
+      dejaDueFollowUps: [
         {
           followUp: 'Slab plant start-up',
           timing: '~Jan 2027',
@@ -599,7 +619,7 @@ export const WEEKLY_CLIENT_BRIEFS: ClientBriefItem[] = [
         type: 'link',
         content: 'Ternium Mexico’s $1.25B green loan (Aug 2025) for its Pesquería low-carbon steel plant',
         evidenceId: 'ternium-green-loan',
-        sourceBadge: 'SEC / The Asset',
+        sourceBadge: 'The Asset / Milbank · Aug 2025',
       },
       { type: 'text', content: ' (cold-rolling/galvanizing ramping; slab plant due by year-end 2026). ' },
       {
@@ -622,7 +642,7 @@ export const WEEKLY_CLIENT_BRIEFS: ClientBriefItem[] = [
     ],
     whyNowBullets: [
       [
-        { type: 'text', content: 'Each dollar now buys ~10% more pesos than in September; remaining MXN capex can be locked in at today’s weaker rate while Banxico’s surprise cut raises further peso downside.' },
+        { type: 'text', content: 'Each dollar now buys ~10% more pesos than in September; remaining MXN capex can be locked in at today’s weaker rate.' },
       ],
       [
         { type: 'text', content: 'Year-end Pesquería slab plant start-up shifts the ' },
@@ -671,7 +691,7 @@ BNP Paribas`,
     rank: 2,
     clientId: 'krispy-kreme',
     clientName: 'Krispy Kreme (DNUT)',
-    tickerOrRegion: 'US Mid-Cap · ~$577M Market Cap',
+    tickerOrRegion: 'US Mid-Cap',
     sector: 'Consumer / Foodservice Franchisor',
     hq: 'Charlotte, NC',
     storyTheme: 'Rates Story · Hike Odds Meet 2028 Maturity',
@@ -687,14 +707,14 @@ BNP Paribas`,
         },
         {
           text: 'Q3 landed Nov 5.',
-          citations: [{ evidenceId: 'dnut-q3-8k', badge: 'SEC Form 8-K' }],
+          citations: [{ evidenceId: 'dnut-q3-8k', badge: 'SEC Form 8-K · Q3 2026' }],
         },
       ],
       theMove:
         'Call treasury now to discuss hedging the floating-rate debt before the Dec 8–9 FOMC, and open the refinancing timeline.',
       whyNow: [
         {
-          text: 'Hot October CPI pushed December hike odds to ~85%. With ~$900M of floating debt, each 25bp hike adds ~$2.25M a year in interest if unhedged.',
+          text: 'Hot October CPI pushed December hike odds to ~85%. With ~$900M of floating debt at FY25 year-end, each 25bp hike adds ~$2.25M a year in interest if unhedged.',
           citations: [
             { evidenceId: 'market-oct-cpi', badge: 'CME FedWatch' },
             { evidenceId: 'dnut-credit-facility', badge: 'SEC 10-K' },
@@ -709,13 +729,22 @@ BNP Paribas`,
         'How much of the term loan is hedged, and when do the hedges roll off?',
         'With Q3 done, are you ready to talk about the refinancing timeline?',
       ],
-      beforeYouCall: 'Check the 10-K for existing swaps.',
+      checklist: {
+        label: 'Before you call',
+        items: [
+          { text: 'Check the 10-K for existing swaps or caps.', citations: [] },
+          {
+            text: 'Confirm the current drawn balance (Q3 net debt was $839.5M).',
+            citations: [{ evidenceId: 'dnut-q3-8k', badge: 'SEC Form 8-K · Q3 2026' }],
+          },
+        ],
+      },
       bring: 'Interest-rate swap or cap · amend-and-extend',
       bnpRole: {
         text: 'Administrative, collateral & documentation agent on the 2023 facility ($300M RCF + $700M TL, +$125M 2025 upsize, matures Mar 2028)',
         citations: [{ evidenceId: 'dnut-credit-facility', badge: 'SEC Proxy / 10-Q' }],
       },
-      suggestedFollowUps: [
+      dejaDueFollowUps: [
         {
           followUp: 'Dec 9 FOMC result',
           timing: 'Dec 9',
@@ -785,7 +814,7 @@ BNP Paribas`,
           evidenceId: 'market-oct-cpi',
           sourceBadge: 'CME FedWatch',
         },
-        { type: 'text', content: ': ~$900M of floating debt means each +25 bps hike adds ~$2.25M in annual interest if unhedged.' },
+        { type: 'text', content: ': ~$900M of floating debt at FY25 year-end means each +25 bps hike adds ~$2.25M in annual interest if unhedged.' },
       ],
       [
         { type: 'text', content: 'A ' },
@@ -822,7 +851,7 @@ BNP Paribas`,
 Congratulations on the Q3 results and the strong market reception to your refranchising progress and raised full-year guidance.
 
 As promised when we spoke in September about revisiting post-Q3, I wanted to flag two timely items ahead of December:
-1. Following this week's October CPI print (+0.4% m/m), market-implied odds for a December 8–9 FOMC hike moved to ~85%. On ~$900M of floating SOFR exposure, every 25 bps move adds roughly $2.25M in annualized interest—so Marc-Antoine Lefèvre from our Rates desk can share live swap and cap structures to review alongside your existing hedge roll-offs.
+1. Following this week's October CPI print (+0.4% m/m), market-implied odds for a December 8–9 FOMC hike moved to ~85%. On ~$900M of floating SOFR exposure at FY25 year-end, every 25 bps move adds roughly $2.25M in annualized interest—so Marc-Antoine Lefèvre from our Rates desk can share live swap and cap structures to review alongside your existing hedge roll-offs.
 2. Looking ahead to March 2027, when the March 2028 credit facility turns current, the post-Q3 equity momentum opens a constructive window with Claire-Marie Dubois in Loan Capital Markets to map out a 1H 2027 amend-and-extend or refinancing roadmap.
 
 Would next Tuesday or Wednesday work for a brief 25-minute call?
@@ -835,123 +864,83 @@ Relationship Manager · Corporate Coverage, BNP Paribas`,
   },
   {
     rank: 3,
-    clientId: 'castleton-commodities',
-    clientName: 'Castleton Commodities (CCI)',
-    tickerOrRegion: 'Global Commodity Merchant',
-    sector: 'Energy, Power, Metals & Freight Trading',
-    hq: 'Stamford, CT',
-    storyTheme: 'Commodity Story · Sharpest Oil Drop Since COVID Hits Borrowing Base',
+    clientId: 'southwest-airlines',
+    clientName: 'Southwest Airlines (LUV)',
+    hq: 'Dallas, TX',
     card: {
-      timingBadge: 'Before Dec certificate · by Nov 30',
+      timingBadge: 'While prices are off highs · by Nov 17',
       triggerTag: 'Trigger: Market + CRM',
       privateSideTooltip:
-        'CCI’s inventory and borrowing-base data are confidential lender information. Never route this brief to BNP’s own commodity traders or research.',
+        'As administrative and collateral agent, BNP receives private lender information (collateral and compliance reporting). Visible to RM and Credit only. Never route to public-side sales, research or BNP’s commodity traders.',
       theMove:
-        'Call before the next borrowing-base report to check collateral headroom after the oil drop, and to re-size the accordion request.',
+        'Call treasury to revisit fuel hedging while oil is off its highs. Southwest has been fully unhedged since 2025.',
       whyNow: [
         {
-          text: 'Brent fell 16% in the week to Nov 6 (the sharpest drop since COVID) and dipped below $90 on Nov 10. CCI’s borrowing base is marked to these prices.',
+          text: 'Brent fell 16% in the week to Nov 6 (its steepest weekly drop since the start of COVID) and traded near $90 on Nov 10.',
           citations: [{ evidenceId: 'market-brent-drop', badge: 'Reuters / OilPrice' }],
         },
         {
-          text: 'In October, CCI asked about using the $1B accordion for more LC capacity, but lower cargo values may change how much it needs.',
-          citations: [{ evidenceId: 'cci-crm-oct26', badge: 'Demo CRM Note · Oct 2026' }],
+          text: 'Unhedged since 2025, each 1¢ per gallon moves quarterly fuel cost by ~$5.6M. In October, the CFO said the board would revisit hedging “if prices come off the highs.”',
+          citations: [
+            { evidenceId: 'luv-10q-fuel', badge: 'SEC 10-Q' },
+            { evidenceId: 'luv-crm-oct26', badge: 'Demo CRM Note · Oct 2026' },
+          ],
         },
       ],
       ask: [
-        'How does your headroom look against October’s certificate?',
-        'Is margin on your hedges creating short-term cash gaps?',
+        'Would the board consider a partial hedge, such as collars on 1H 2027 fuel, while prices are lower?',
+        'Are you planning to use the $500M incremental term-loan feature for 2027 deliveries?',
       ],
-      bring: 'Accordion or interim redetermination · commodity & freight hedging',
-      bnpRole: {
-        text: 'Global coordinator & administrative agent on the borrowing-base facility (2018 $3.525B; 2022 $2.2B, $1B accordion)',
-        citations: [{ evidenceId: 'cci-borrowing-base', badge: 'CCI / ABF Journal' }],
-      },
-      suggestedFollowUps: [
-        {
-          followUp: 'Next borrowing-base report',
-          timing: 'Dec',
-          why: {
-            text: 'Re-check headroom on the new certificate after the oil sell-off.',
+      checklist: {
+        label: 'Barrier check',
+        items: [
+          {
+            text: 'Build the hedging discussion on public data only (10-Q fuel disclosures). Don’t share agent-side collateral or compliance information with the derivatives desk.',
             citations: [],
           },
-          dejaDueItemId: 'dd-cci-cert',
+        ],
+      },
+      bring: 'Jet fuel / crude collars or swaps · incremental term loan',
+      bnpRole: {
+        text: 'Administrative & collateral agent and initial lender on the $500M senior secured term loan (Mar 2026, aircraft-secured, matures Mar 2029)',
+        citations: [{ evidenceId: 'luv-term-loan-8k', badge: 'SEC 8-K · Mar 2026' }],
+      },
+      dejaDueFollowUps: [
+        {
+          followUp: 'Q4 results & 2027 fuel outlook',
+          timing: 'late Jan 2027',
+          dejaDueItemId: 'dd-luv-q4',
         },
       ],
-      assumption: 'Assumes BNP remains agent on a monthly borrowing-base certificate schedule.',
-      todaysCall: { move: 'Check borrowing-base headroom after oil drop', callBy: 'Mon, Nov 30' },
+      todaysCall: { move: 'Revisit fuel hedging while prices are off highs', callBy: 'Tue, Nov 17' },
     },
-    bnpRoleSummary: 'Global coordinator & administrative agent on borrowing-base facility (2018 $3.525B & 2022 $2.2B renewals, $1B accordion)',
-    engageTiming: 'Engage Before Monthly Borrowing-Base Certificate',
-    briefHeadline:
-      'Brent fell 16% in a week and briefly broke $90. CCI’s BNP-agented borrowing base is marked to these prices. Check headroom, hedge margin and LC usage before the next borrowing-base report.',
-    publicEvidence: [
-      { type: 'text', content: 'BNP Paribas acted as global coordinator and administrative agent on CCI’s ' },
-      {
-        type: 'link',
-        content: '2018 ($3.525B) and 2022 ($2.2B, 17 banks, $1B accordion) borrowing-base facilities',
-        evidenceId: 'cci-borrowing-base',
-        sourceBadge: 'CCI / ABF Journal',
-      },
-      { type: 'text', content: ' backing merchanting letters of credit. This week, ' },
-      {
-        type: 'link',
-        content: 'Brent fell 16% in the week to Nov 6 (sharpest drop since COVID) and dipped below $90 on Nov 10',
-        evidenceId: 'market-brent-drop',
-        sourceBadge: 'Reuters / OilPrice',
-      },
-      { type: 'text', content: ' as Dated Brent slipped below futures—yet Goldman lifted its Dec target to $105 ($140 Gulf risk), creating acute two-way volatility.' },
-    ],
-    syntheticCrmContext: [
-      { type: 'text', content: 'Per your ' },
-      {
-        type: 'link',
-        content: 'Oct 2026 call note, CCI built crude and refined product inventory during the war premium and asked about using the $1B accordion for extra LC capacity',
-        evidenceId: 'cci-crm-oct26',
-        sourceBadge: 'Demo CRM Note',
-      },
-      { type: 'text', content: ' (demo assumes BNP remains agent on a monthly borrowing-base certificate schedule).' },
-    ],
-    whyNowBullets: [
-      [
-        { type: 'text', content: 'A borrowing base lends against inventory and receivables at market value: a 16% Brent drop directly shrinks collateral headroom, even as smaller cargoes require smaller LCs.' },
-      ],
-      [
-        { type: 'text', content: 'Hedged inventory means futures gains and physical losses settle on different timelines, creating short-term liquidity swings while tanker freight rates stayed elevated.' },
-      ],
-    ],
-    keyPointsToHit: [
-      'Mark-to-market borrowing-base availability vs. October’s certificate following the 16% crude sell-off.',
-      'Re-sizing LC accordion demand versus lower nominal cargo values and futures/physical margin timing mismatches.',
-      'Two-way crude & elevated tanker freight hedging if Iran diplomacy reverses back toward $105+.',
-    ],
-    productsAndSpecialists: 'Borrowing-base facility (accordion, interim redetermination) · Letters of credit · Commodity & freight hedging',
     recommendedTeam: [
-      { name: 'Henrik Lindqvist', role: 'MD, Commodity Trade Finance', email: 'henrik.lindqvist@bnpparibas.com' },
       { name: 'David K. Chen', role: 'Executive Director, Commodity Derivatives', email: 'david.chen@bnpparibas.com' },
+      { name: 'Claire-Marie Dubois', role: 'Director, Loan Capital Markets', email: 'claire-marie.dubois@bnpparibas.com' },
     ],
     informationBarrierNotice:
-      'Private-Side Barrier: CCI’s inventory and borrowing-base data are confidential lender information. Never route this brief to BNP’s own commodity traders or research.',
+      'Private-Side Barrier: As administrative and collateral agent, BNP receives private lender information (collateral and compliance reporting). Visible to RM and Credit only. Never route to public-side sales, research or BNP’s commodity traders.',
     keyContact: {
-      name: 'Global Treasury & Trade Operations',
-      role: 'CCI Treasury',
-      email: 'treasury@cci-demo.com',
+      name: 'Treasury',
+      role: 'Southwest Treasury',
+      email: 'treasury@southwest-demo.com',
     },
     draftEmail: {
-      subject: 'CCI Borrowing-Base Headroom & LC Capacity Check — Following 16% Brent Move',
+      // Drafted from handoff v5 facts only; for team review.
+      subject: 'Southwest — Fuel Hedging While Prices Are Off Highs & Incremental Term-Loan Feature',
       body: `Hi Team,
 
-Following the sharp 16% pullback in Brent over the past week and Tuesday's dip below $90/bbl—while tanker freight remains elevated—we wanted to touch base ahead of your next borrowing-base certificate.
+With Brent down 16% in the week to Nov 6 and trading near $90 on Nov 10, I wanted to follow up on our October conversation, when you mentioned the board would revisit fuel hedging if prices came off the highs.
 
-When we spoke in October about your inventory build and potential use of the $1B accordion for additional LC capacity, pricing dynamics looked quite different. Henrik Lindqvist (Commodity Trade Finance) and David Chen (Commodity Derivatives) would be glad to run through updated mark-to-market availability, hedge-margin liquidity timing, and two-way upside protection scenarios.
+Since the hedging program was discontinued in 2025, each 1¢ per gallon moves quarterly fuel cost by roughly $5.6M. David Chen from our Commodity Derivatives team can walk through partial-hedge structures, such as collars on 1H 2027 fuel. Claire-Marie Dubois in Loan Capital Markets can also cover the $500M incremental term-loan feature you flagged for 2027 aircraft deliveries.
 
-Do you have 20 minutes this week to review ahead of month-end reporting?
+Would a 25-minute call next week work?
 
 Best regards,
 Sophie Laurent
-BNP Paribas`,
+Relationship Manager · Corporate Coverage, BNP Paribas`,
     },
-    linkedEvidenceIds: ['cci-borrowing-base', 'market-brent-drop', 'cci-crm-oct26'],
+    linkedEvidenceIds: ['luv-term-loan-8k', 'luv-10q-fuel', 'market-brent-drop', 'luv-crm-oct26'],
   },
 ];
 
@@ -964,21 +953,9 @@ export const DEJA_DUE_ITEMS: DejaDueItem[] = [
     dateValue: '2026-12-09',
     triggerType: 'Calendar',
     title: 'Post-FOMC Rate Decision Follow-On',
-    actionRequired: 'Resurface immediately after the Dec 8–9 FOMC decision with the actual policy move and ~$900M SOFR interest impact.',
+    actionRequired: 'Resurface immediately after the Dec 8–9 FOMC decision with the actual policy move and ~$900M SOFR interest impact (floating debt at FY25 year-end).',
     specialists: 'Marc-Antoine Lefèvre (MD, Corporate Rates)',
     evidenceId: 'market-oct-cpi',
-  },
-  {
-    id: 'dd-cci-cert',
-    clientId: 'castleton-commodities',
-    clientName: 'Castleton Commodities (CCI)',
-    triggerTiming: 'Dec 31, 2026',
-    dateValue: '2026-12-31',
-    triggerType: 'Calendar',
-    title: 'Next Monthly Borrowing-Base Certificate & Tranche Roll',
-    actionRequired: 'Re-check mark-to-market inventory headroom, LC accordion demand, and 364-day/2-year tranche maturities.',
-    specialists: 'Henrik Lindqvist (MD, Commodity Trade Finance)',
-    evidenceId: 'cci-borrowing-base',
   },
   {
     id: 'dd-tx-startup',
@@ -1003,6 +980,18 @@ export const DEJA_DUE_ITEMS: DejaDueItem[] = [
     actionRequired: 'Reassess Asian steel import flows into North America and Mexico mirror-tariff pressure.',
     specialists: 'Mateo Villalobos (MD, LatAm FX)',
     evidenceId: 'market-mxn-banxico-232',
+  },
+  {
+    id: 'dd-luv-q4',
+    clientId: 'southwest-airlines',
+    clientName: 'Southwest Airlines (LUV)',
+    triggerTiming: 'late Jan 2027',
+    dateValue: '2027-01-25',
+    triggerType: 'Calendar',
+    title: 'Q4 results & 2027 fuel outlook',
+    actionRequired: 'Re-check fuel exposure and hedging stance once Q4 results and the 2027 fuel outlook are out.',
+    specialists: 'David K. Chen (Executive Director, Commodity Derivatives)',
+    evidenceId: 'luv-10q-fuel',
   },
   {
     id: 'dd-dnut-current',
@@ -1031,12 +1020,12 @@ export const DEJA_DUE_ITEMS: DejaDueItem[] = [
   {
     id: 'dd-event-triggers',
     clientId: 'krispy-kreme',
-    clientName: 'All 3 Clients (Event-Triggered)',
+    clientName: 'Krispy Kreme (DNUT)',
     triggerTiming: 'Event-Triggered',
     dateValue: '2026-11-20',
     triggerType: 'Event-Triggered',
-    title: 'Refranchising Closes (DNUT) & Iran Diplomacy Shifts (CCI)',
-    actionRequired: 'DNUT: Ask about refranchising proceeds debt paydown & covenant headroom. CCI: Re-run borrowing-base card on any Iran deal or breakdown.',
+    title: 'Refranchising Closes (DNUT)',
+    actionRequired: 'DNUT: Ask about refranchising proceeds debt paydown & covenant headroom.',
     specialists: 'RM Coverage & Credit',
     evidenceId: 'dnut-q3-8k',
   },
@@ -1053,11 +1042,11 @@ export const TRIGGER_FEED: TriggerFeedRow[] = [
   },
   {
     date: 'Nov 9–10',
-    event: 'Brent fell 16% in prior week (sharpest since COVID), then briefly below $90 on Iran peace hopes',
-    whoItHits: 'Commodity traders, producers, borrowing-base borrowers',
+    event: 'Brent fell 16% in prior week (steepest weekly drop since the start of COVID), then traded near $90 on Iran peace hopes',
+    whoItHits: 'Oil sell-off × unhedged fuel exposure.',
     source: 'OilPrice / Reuters',
     externalUrl: 'https://oilprice.com/Energy/Crude-Oil/',
-    surfacedClient: 'Castleton Commodities',
+    surfacedClient: 'Southwest Airlines (LUV)',
   },
   {
     date: 'Nov 9',
@@ -1138,8 +1127,8 @@ export const SUPPRESSED_SIGNALS: SuppressedSignalRow[] = [
   },
   {
     event: 'Fed hike odds (~85%)',
-    client: 'Castleton Commodities',
-    reason: 'Real, but secondary to a 16% oil move; merged into CCI liquidity check',
+    client: 'Southwest Airlines',
+    reason: 'Real, but secondary to a 16% oil move; merged into the Southwest fuel-hedging card',
     ruleApplied: 'One card per client per week',
   },
   {
@@ -1195,7 +1184,7 @@ export const INITIAL_EMAILS: OutlookEmail[] = [
     senderEmail: 'rendez-vous@bnpparibas.com',
     senderRole: 'BNP Paribas RM Client Intelligence',
     subject: '(INTERNAL): This Week in a Changing World',
-    preview: '3 clients matched from 11 live market triggers: Ternium Mexico (MXN/Banxico/232), Castleton (Brent -16%), Krispy Kreme (CPI/2028 refi) + Déjà Due...',
+    preview: '3 clients matched from 11 live market triggers: Ternium Mexico (MXN/Banxico/232), Southwest (Brent -16%), Krispy Kreme (CPI/2028 refi) + Déjà Due...',
     timestamp: '7:30 AM',
     dateLabel: 'Thu, Nov 12, 2026 · 07:30 AM',
     clientTag: '3 Clients · 8 Filtered',
@@ -1250,30 +1239,6 @@ export const INITIAL_EMAILS: OutlookEmail[] = [
     ],
   },
   {
-    id: 'email-cci-ops',
-    folder: 'inbox',
-    group: 'Yesterday',
-    isUnread: false,
-    isFlagged: true,
-    isFocused: true,
-    senderName: 'CCI Trade Operations',
-    senderInitials: 'CC',
-    senderEmail: 'treasury@cci-demo.com',
-    senderRole: 'Castleton Commodities International',
-    subject: 'Nov 30 Borrowing-Base Certificate Prep & Brent Volatility',
-    preview: 'Sophie, given Brent’s 16% drop and dip below $90 yesterday, we are running a mid-month inventory mark ahead of the Nov 30 BBC...',
-    timestamp: '4:18 PM',
-    dateLabel: 'Wed, Nov 11, 2026 · 4:18 PM',
-    clientTag: 'Castleton Commodities',
-    bodyParagraphs: [
-      'Hi Sophie,',
-      'Given Brent’s 16% drop over the past week and yesterday’s move below $90, we are running an interim mark-to-market on our physical crude and refined inventory built in October.',
-      'We may adjust our LC utilization forecast versus what we discussed regarding the $1B accordion. Let’s connect with Henrik Lindqvist before the Nov 30 borrowing-base certificate.',
-      'Regards,',
-      'Global Treasury & Trade Operations · Castleton Commodities',
-    ],
-  },
-  {
     id: 'email-weekly-brief-prev',
     folder: 'briefs',
     group: 'Yesterday',
@@ -1319,7 +1284,7 @@ export const CLIENT_DOSSIERS: ClientDossier[] = [
     name: 'Krispy Kreme (DNUT)',
     sector: 'Consumer / Foodservice Franchisor',
     hq: 'Charlotte, NC',
-    marketCapOrSize: '~$577M Market Cap',
+    marketCapOrSize: 'Not in demo data',
     keyFinancials: 'Q3 Rev $328.8M · FY Guide $1.35–$1.40B · Liquidity $250.5M',
     netLeverage: '5.5x (Dividends restricted >3.0x)',
     bnpDocumentedRole: 'Admin, Collateral & Doc Agent (2023 Facility) + LC Issuer',
@@ -1385,38 +1350,40 @@ export const CLIENT_DOSSIERS: ClientDossier[] = [
       { name: 'Lucie Moreau', role: 'VP, Sustainable Finance Advisory', email: 'lucie.moreau@bnpparibas.com' },
     ],
     recentEvidenceIds: ['ternium-green-loan', 'market-mxn-banxico-232', 'ternium-crm-aug26'],
+    contextNote:
+      'NGO campaign: BankTrack and the Fair Steel Coalition criticized the green loan (Apr 2026). Be ready if sustainability-linked terms come up.',
   },
   {
-    id: 'castleton-commodities',
-    name: 'Castleton Commodities (CCI)',
-    sector: 'Global Commodity Merchant (Energy, Power, Metals, Freight)',
-    hq: 'Stamford, CT',
-    marketCapOrSize: '$2.2B Borrowing Base (+$1B Accordion)',
-    keyFinancials: '17-Bank Syndicated BBF · Physical & Derivatives Merchanting',
-    netLeverage: 'Marked-to-Market Borrowing Base',
-    bnpDocumentedRole: 'Global Coordinator & Administrative Agent (2018 & 2022 Renewals)',
+    id: 'southwest-airlines',
+    name: 'Southwest Airlines (LUV)',
+    sector: 'Airline',
+    hq: 'Dallas, TX',
+    marketCapOrSize: '$500M Term Loan (BNP Agent)',
+    keyFinancials: 'Fuel hedging discontinued in 2025 · ~$5.6M quarterly fuel cost per 1¢/gal (Q2 2026 est.)',
+    netLeverage: 'Not in demo data',
+    bnpDocumentedRole: 'Administrative & Collateral Agent and Initial Lender ($500M Term Loan, Mar 2026)',
     primaryContact: {
-      name: 'Global Treasury & Trade Operations',
-      role: 'Trade Finance & Liquidity',
-      email: 'treasury@cci-demo.com',
-      phone: '+1 (203) 555-0192',
+      name: 'Treasury',
+      role: 'Corporate Treasury',
+      email: 'treasury@southwest-demo.com',
+      phone: 'Not in demo data',
     },
     activeFacilities: [
       {
-        code: 'CCI-BBF-22',
-        type: 'Global Borrowing-Base Facility (364d & 2Y)',
-        amount: '$2,200.0M (+$1B Accordion)',
-        maturity: 'Monthly BBC Redetermination',
-        status: 'Brent -16% Mark Watch',
+        code: 'LUV-2026-TL',
+        type: 'Senior Secured Term Loan (Aircraft-Secured)',
+        amount: '$500.0M (+ up to $500M uncommitted incremental)',
+        maturity: 'Mar 11, 2029',
+        status: 'Fully Drawn',
       },
     ],
-    openOpportunity: 'Borrowing-Base Headroom Check, LC Accordion Review, Commodity & Freight Hedging',
+    openOpportunity: 'Jet Fuel / Crude Collars or Swaps + Incremental Term Loan (2027 Deliveries)',
     recommendedTeam: [
-      { name: 'Henrik Lindqvist', role: 'MD, Commodity Trade Finance', email: 'henrik.lindqvist@bnpparibas.com' },
       { name: 'David K. Chen', role: 'Executive Director, Commodity Derivatives', email: 'david.chen@bnpparibas.com' },
+      { name: 'Claire-Marie Dubois', role: 'Director, Loan Capital Markets', email: 'claire-marie.dubois@bnpparibas.com' },
     ],
-    recentEvidenceIds: ['cci-borrowing-base', 'market-brent-drop', 'cci-crm-oct26'],
+    recentEvidenceIds: ['luv-term-loan-8k', 'luv-10q-fuel', 'market-brent-drop', 'luv-crm-oct26'],
     informationBarrierNotice:
-      'Private-Side Lender File: Inventory & facility data restricted from BNP commodity trading desks and research.',
+      'Private-Side Lender File: As administrative and collateral agent, BNP receives private lender information (collateral and compliance reporting). Visible to RM and Credit only. Never route to public-side sales, research or BNP’s commodity traders.',
   },
 ];
